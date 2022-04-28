@@ -322,7 +322,7 @@ if __name__ == '__main__':
             if step % 1000 == 0:
                 avg_return = compute_avg_return(tf_env, agent.policy, 5)
 
-                save_agent(file_path + "/trained-model/DQN/" + "C51_" + str(dt) + "_" + str(description) + \
+                save_agent(file_path + "/trained-model/C51/" + "C51_" + str(dt) + "_" + str(description) + \
                             "/Model/",'C51_policy_' + str(step/1000) + "_" + str(avg_return), agent.policy)
 
                 print('step = {0}: Average Return = {1}'.format(step, avg_return))
