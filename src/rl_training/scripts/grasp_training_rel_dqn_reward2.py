@@ -12,6 +12,8 @@ import pickle
 import random 
 import tensorflow as tf
 import time
+import argparse
+import datetime
 
 def solve_cudnn_error():
     gpus = tf.config.experimental.list_physical_devices('GPU')
@@ -67,7 +69,9 @@ from tf_agents.utils import nest_utils
 
 from tf_agents.trajectories import time_step as ts
 
-from grasp_env_absAction import GraspEnv
+from grasp_Env_RelAction_reward2 import GraspEnv
+
+import tensorboardX
 
 tf.compat.v1.enable_v2_behavior()
 
@@ -109,8 +113,6 @@ def grab_pointClouds_callback(ros_point_cloud):
                     # x,y,z can be retrieved from the x[0],x[1],x[2]
         xyz = np.append(xyz,[[x[0],x[1],x[2]]], axis = 0)
         rgb = np.append(rgb,[[r,g,b]], axis = 0)
-
-    # rospy.loginfo('Done grab_pointClouds_callback')
 
 def do_loadPointCloud(req):
     rospy.wait_for_service('/load_pointcloud')
@@ -158,6 +160,16 @@ def save_agent(save_path, agent_name, agent_policy):
     tf_policy_saver.save(policy_dir)
 
 if __name__ == '__main__':
+
+    print("os.path.dirname(__file__)  ", os.path.dirname(__file__))
+
+    file_path = os.path.dirname(__file__)
+
+    dt = datetime.datetime.now().strftime('%y%m%d_%H%M')
+
+    description = rospy.get_param('description')
+
+    tb = tensorboardX.SummaryWriter(file_path + "/trained-model/DQN/" + "DQN_" + str(dt) + "_" + str(description) + "/")
 
     #init ros
     rospy.init_node('Reinforcement_Learning_Trining', anonymous=True)
@@ -231,12 +243,9 @@ if __name__ == '__main__':
     replay_buffer = tf_agents.replay_buffers.tf_uniform_replay_buffer.TFUniformReplayBuffer(data_spec=agent.collect_data_spec,
                                                                                             batch_size=tf_env.batch_size,
                                                                                             max_length=64*100)
-
     
     avg_return = compute_avg_return(tf_env, agent.policy, 5)
     print('step = {0}: Average Return = {1}'.format(0, avg_return))
-
-    returns = [avg_return]
 
     collect_steps_per_iteration = 1
     batch_size = 64
@@ -247,14 +256,6 @@ if __name__ == '__main__':
     num_iterations = 10000
 
     time_step = tf_env.reset()
-
-    TRAIN_LOSS = []
-    AVG_RETURN = []
-    STEP = []
-
-    train_loss_file = "/home/ur5/code/RL-Grasp-with-GRCNN/src/rl_training/scripts/training_result/TRAIN_LOSS.pkl"
-    avf_return_file = "/home/ur5/code/RL-Grasp-with-GRCNN/src/rl_training/scripts/training_result/AVG_RETURN.pkl"
-    step_file = "/home/ur5/code/RL-Grasp-with-GRCNN/src/rl_training/scripts/training_result/STEP.pkl"
 
     for _ in range(batch_size):
         collect_step(tf_env, agent.collect_policy, replay_buffer)
@@ -278,27 +279,16 @@ if __name__ == '__main__':
             # Print loss every 200 steps.
             if step % 200 == 0:
                 print('step = {0}: loss = {1}'.format(step, train_loss))
-                STEP.append(step)
-                TRAIN_LOSS.append(train_loss.numpy())
 
-                open_file = open(train_loss_file, "wb")
-                pickle.dump(TRAIN_LOSS, open_file)
-                open_file.close()
-
-                open_file = open(step_file, "wb")
-                pickle.dump(STEP, open_file)
-                open_file.close()
+                tb.add_scalar("/train/loss", train_loss.numpy(), step)
 
             # Evaluate agent's performance every 1000 steps.
             if step % 1000 == 0:
                 avg_return = compute_avg_return(tf_env, agent.policy, 5)
 
-                save_agent("./src/rl_training/scripts/trained-model/DQN/", 'DQN_policy_' + str(step/1000) + "_" + str(avg_return), agent.policy)
+                save_agent(file_path + "/trained-model/DQN/" + "DQN_" + str(dt) + "_" + str(description) + \
+                            "/Model/",'DQN_policy_' + str(step/1000) + "_" + str(avg_return), agent.policy)
 
                 print('step = {0}: Average Return = {1}'.format(step, avg_return))
-                returns.append(avg_return)
-                AVG_RETURN.append(avg_return)
-
-                open_file = open(avf_return_file, "wb")
-                pickle.dump(AVG_RETURN, open_file)
-                open_file.close()
+ 
+                tb.add_scalar("/train/reward", avg_return, step)

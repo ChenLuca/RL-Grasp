@@ -111,7 +111,9 @@ class GraspEnv(py_environment.PyEnvironment):
 
         self.input_channel = 2
 
-        self._step_lengh = 1
+        self._step_lengh = 2
+
+        print("!!!!!!!!!!!!!!!!!!!!self._step_lengh: ", self._step_lengh)
 
         self.phase = phase
 
