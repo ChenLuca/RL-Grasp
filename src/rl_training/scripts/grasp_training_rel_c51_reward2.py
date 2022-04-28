@@ -130,7 +130,7 @@ def do_loadPointCloud(req):
 def compute_avg_return(environment, policy, num_episodes=10):
     total_return = 0.0
     time_start = time.time()
-    num_env = 45
+    num_env = 50
     for _ in range(num_env):
         do_loadPointCloud(1)
         for _ in range(num_episodes):
