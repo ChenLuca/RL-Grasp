@@ -178,7 +178,7 @@ if __name__ == '__main__':
     
     do_loadPointCloud(1)
 
-    environment = GraspEnv([120, 160], "training")
+    environment = GraspEnv([120, 160], "training", step_length=1)
 
     time.sleep(1)
 

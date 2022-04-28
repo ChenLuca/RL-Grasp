@@ -102,7 +102,7 @@ grab_open_rgb_bridge = CvBridge()
 
 class GraspEnv(py_environment.PyEnvironment):
 
-    def __init__(self, input_image_size, phase):
+    def __init__(self, input_image_size, phase, step_length=1):
         
         # must be odd number
         self.num_actions = 49
@@ -111,9 +111,9 @@ class GraspEnv(py_environment.PyEnvironment):
 
         self.input_channel = 2
 
-        self._step_lengh = 1
+        self._step_length = step_length
 
-        print("!!!!!!!!!!!!!!!!!!!!self._step_lengh: ", self._step_lengh)
+        print("!!!!!!!!!!!!!!!!!!!!self._step_length: ", self._step_length)
 
         self.phase = phase
 
@@ -374,12 +374,12 @@ class GraspEnv(py_environment.PyEnvironment):
         if self.approach_stddev > self.Maxapproach_stddev:
             self.Maxapproach_stddev = self.approach_stddev
 
-        self._reward =  - 1.0*(self.NormalDepthNonZero/self.MaxNormalDepthNonZero) \
+        self._reward =  - (self.NormalDepthNonZero/self.MaxNormalDepthNonZero) \
+                        - 0.1*(self._step_counter) \
                         + (self.pointLikelihood_right_finger) \
                         + (self.approach_mean/self.Maxapproach_mean) \
                         + (self.approach_stddev/self.Maxapproach_stddev) \
-                        - (self._step_counter)*0.1 \
-                        + 1.0*(self.apporachLikelihood) \
+                        + (self.apporachLikelihood) \
                         + self.pointLikelihood_grab_cloud
 
                         # + self.pointLikelihood_left_finger)
@@ -423,7 +423,7 @@ class GraspEnv(py_environment.PyEnvironment):
             return ts.termination(self._state, 0.0)
 
         if self.phase == "training":
-            if self._step_counter > self._step_lengh:
+            if self._step_counter > self._step_length:
                 self._episode_ended = True
                 self._step_counter = 0
                 # print("out of step!")
