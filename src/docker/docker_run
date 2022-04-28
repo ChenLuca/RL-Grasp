@@ -2,7 +2,9 @@ sudo docker run -it --gpus all --shm-size=8192m --network=host -v /home/iclab-rl
 
 sudo docker run -it --gpus all --shm-size=8192m -P -v /home/iclab-rl-raining/code/RL-Grasp-with-GRCNN/:/home/code/RL-Grasp-with-GRCNN/:rw -v /home/iclab-rl-raining/datasets/:/home/datasets:rw rl_training:v1
 
-sudo docker run -it --gpus all --shm-size=8192m -P -v /home/luca-home/code/RL_Grasp/:/home/code/RL_Grasp/:rw -v /home/luca-home/datasets/:/home/datasets:rw rl_training:v1
+sudo docker run -it --gpus all --shm-size=8192m -P -v /home/luca-home/code/RL_grasp/:/home/code/RL_grasp/:rw -v /home/luca-home/datasets/:/home/datasets:rw rl_training:v1
+
+sudo docker run -it --gpus all --shm-size=8192m -P -v /home/iclab-rl-raining/code/RL_grasp/:/home/code/RL_grasp/:rw -v /home/iclab-rl-raining/datasets/:/home/datasets:rw rl_training:v1
 
 cd home/code/RL-Grasp-with-GRCNN/ && . devel/setup.bash
 
