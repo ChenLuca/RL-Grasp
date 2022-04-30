@@ -12,6 +12,7 @@ import math
 import pickle
 import random 
 import tensorflow as tf
+import time
 
 def solve_cudnn_error():
     gpus = tf.config.experimental.list_physical_devices('GPU')
@@ -30,9 +31,8 @@ solve_cudnn_error()
 
 from sensor_msgs.msg import PointCloud2
 from sensor_msgs.msg import Image
-from rl_grasp.srv import get_Agent_action
-
-from rl_grasp.srv import loadPointCloud
+from rl_training.msg import AngleAxis_rotation_msg
+from rl_training.srv import loadPointCloud
 import time
 
 import sensor_msgs.point_cloud2 as pc2
@@ -70,14 +70,15 @@ from tf_agents.trajectories import time_step as ts
 
 tf.compat.v1.enable_v2_behavior()
 
-from grasp_Env_RelAction_reward2 import GraspEnv
-
+from grasp_env import GraspEnv
 
 if __name__ == '__main__':
 
     rospy.init_node('Reload_Reinforcement_Learning_Agent', anonymous=True)
+
+    handle_loadPointCloud = rospy.ServiceProxy('/load_pointcloud', loadPointCloud)
     
-    environment = GraspEnv([120, 160], "inference")
+    environment = GraspEnv([120, 160])
 
     time.sleep(1)
 
@@ -85,55 +86,16 @@ if __name__ == '__main__':
 
     tf_env = tf_py_environment.TFPyEnvironment(environment)
 
+    policy_dir = os.path.join("./src/rl_training/scripts/trained-model/C51/", 'C51_policy_53.0_8.002437')
 
-    # baseline DQN agent
-    # policy_dir = os.path.join("./src/rl_grasp/scripts/trained-model/", 'DQN_baseline/20220306_DQN_policy_83.0_1.1929423')
-
-    # # principal_curvatures 
-    # # not stable
-    # policy_dir = os.path.join("./src/rl_grasp/scripts/trained-model/", 'DQN_with_principal_curvatures_20220410/DQN_policy_42.0_76.079285')
-
-    # # principal_curvatures
-    # policy_dir = os.path.join("./src/rl_grasp/scripts/trained-model/", 'DQN_with_principal_curvatures_20220410/DQN_policy_301.0_59.550373')
-
-
-    # # principal_curvatures gaussian input
-    # policy_dir = os.path.join("./src/rl_grasp/scripts/trained-model/", 'DQN_principal_curvatures_gaussian_input_image_20220414/DQN_policy_180.0_71.76671')
-
-    # # principal_curvatures gaussian input
-    # policy_dir = os.path.join("./src/rl_grasp/scripts/trained-model/", 'DQN_principal_curvatures_gaussian_input_image_20220414/DQN_policy_200.0_56.337597')
-
-
-    # q-sample
-    
-    policy_dir = os.path.join("/home/code/RL_grasp/src/rl_training/scripts/trained-model/DQN/DQN_220428_1115_step_length_2/Model/DQN_policy_753.0_5.7361913")
     saved_policy = tf.saved_model.load(policy_dir)
 
-
-    def handle_get_agent_action(req):
-        time_step = tf_env.reset()
-        total_reward = 0
-        #   while not time_step.is_last():
-        time1 = time.time()
-        for i in range(3):
-            action_step = saved_policy.action(time_step)
-            time_step = tf_env.step(action_step.action)
-            total_reward += time_step.reward.numpy()
-            print("time_step reward: ", time_step.reward.numpy())
-            print("total_reward: ", total_reward)
-        print("rl_grasp run time ", time.time() - time1)
-
-    s = rospy.Service('/get_agent_action', get_Agent_action, handle_get_agent_action)
-
-    rospy.spin()
-
-    # while 1:
-    #   time_step = tf_env.reset()
-    #   total_reward = 0
-    # #   while not time_step.is_last():
-    #   for i in range(2):
-    #     action_step = saved_policy.action(time_step)
-    #     time_step = tf_env.step(action_step.action)
-    #     total_reward += time_step.reward.numpy()
-    #     print("time_step reward: ", time_step.reward.numpy())
-    #   print("total_reward: ", total_reward)
+    while 1:
+      time_step = tf_env.reset()
+      total_reward = 0
+      while not time_step.is_last():
+        action_step = saved_policy.action(time_step)
+        time_step = tf_env.step(action_step.action)
+        total_reward += time_step.reward.numpy()
+        # print("time_step reward: ", time_step.reward.numpy())
+      print("total_reward: ", total_reward)
