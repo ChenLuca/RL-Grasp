@@ -102,7 +102,7 @@ grab_open_rgb_bridge = CvBridge()
 
 class GraspEnv(py_environment.PyEnvironment):
 
-    def __init__(self, input_image_size, phase):
+    def __init__(self, input_image_size, phase, step_lengtn):
         
         # must be odd number
         self.num_actions = 49
@@ -111,7 +111,7 @@ class GraspEnv(py_environment.PyEnvironment):
 
         self.input_channel = 2
 
-        self._step_lengh = 2
+        self._step_lengh = step_lengtn
 
         print("!!!!!!!!!!!!!!!!!!!!self._step_lengh: ", self._step_lengh)
 

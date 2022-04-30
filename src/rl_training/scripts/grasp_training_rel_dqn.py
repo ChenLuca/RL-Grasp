@@ -172,13 +172,13 @@ if __name__ == '__main__':
     tb = tensorboardX.SummaryWriter(file_path + "/trained-model/DQN/" + "DQN_" + str(dt) + "_" + str(description) + "/")
 
     #init ros
-    rospy.init_node('Reinforcement_Learning_Trining', anonymous=True)
+    rospy.init_node('Reinforcement_Learning_Training', anonymous=True)
 
     handle_loadPointCloud = rospy.ServiceProxy('/load_pointcloud', loadPointCloud)
     
     do_loadPointCloud(1)
 
-    environment = GraspEnv([120, 160], "training")
+    environment = GraspEnv([120, 160], "training", 2)
 
     time.sleep(1)
 

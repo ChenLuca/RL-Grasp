@@ -102,7 +102,7 @@ grab_open_rgb_bridge = CvBridge()
 
 class GraspEnv(py_environment.PyEnvironment):
 
-    def __init__(self, input_image_size, phase):
+    def __init__(self, input_image_size, phase, step_lengtn):
         
         # must be odd number
         self.num_actions = 49
@@ -111,7 +111,7 @@ class GraspEnv(py_environment.PyEnvironment):
 
         self.input_channel = 2
 
-        self._step_lengh = 1
+        self._step_lengh = step_lengtn
 
         print("!!!!!!!!!!!!!!!!!!!!self._step_lengh: ", self._step_lengh)
 
@@ -333,8 +333,6 @@ class GraspEnv(py_environment.PyEnvironment):
         rotation_angle_15 = (math.pi*10)/180 
 
         rotation_angle_x, rotation_angle_y = self._set_action(self.num_actions, action_value)
-
-        print("rotation_angle_x, rotation_angle_y ", rotation_angle_x, rotation_angle_y)
 
         self.rotate_x = self.rotate_x + (rotation_angle_x * rotation_angle_15)
         self.rotate_y = self.rotate_y + (rotation_angle_y * rotation_angle_15)
