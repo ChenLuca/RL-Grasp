@@ -330,7 +330,7 @@ class GraspEnv(py_environment.PyEnvironment):
         rotation_angle_10 = (math.pi*10)/180 
 
         # 15 degree
-        rotation_angle_15 = (math.pi*10)/180 
+        rotation_angle_15 = (math.pi*15)/180 
 
         rotation_angle_x, rotation_angle_y = self._set_action(self.num_actions, action_value)
 
