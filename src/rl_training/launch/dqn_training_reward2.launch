@@ -1,6 +1,6 @@
 <launch>
 	<arg name="description" default="aaa"/>
-	<node name="pcl_service" pkg="pcl_utils" type="pcl_service" />
+	<node name="pcl_service" pkg="pcl_utils" type="pcl_service" output="screen"/>
 	<node name="sample_q_image" pkg="dl_grasp" type="sample_q_image.py" />
 	<node name="DQN_training" pkg="rl_training" type="grasp_training_rel_dqn_reward2.py" output="screen" />
 		<param name="description" value="$(arg description)" />

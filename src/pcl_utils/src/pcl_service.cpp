@@ -1397,7 +1397,9 @@ pcl_utils::RL_Env_msg do_PointcloudProcess()
 
       // cout << "grasp_3D[0] " << grasp_3D[0] << ", grasp_3D[1] " << grasp_3D[1] << ", grasp_3D[2] " << grasp_3D[2] << endl;
 
-      float z_dist = 0.05;
+      // float z_dist = 0.05;
+      float z_dist = 0.03;
+
       //rotate point Cloud
       do_Rotate_2(grab_cloud, 
                 retransform_approach_vector_plane_cloud, 
@@ -1482,10 +1484,13 @@ pcl_utils::RL_Env_msg do_PointcloudProcess()
         object_pose.pose.position.z = object_normal_grab.z;
 
         pub_pose_grab.publish (object_pose);
+        float approach_vector_norm = sqrt(pow(plane_coefficients_vector.approach_vector(0), 2) + pow(plane_coefficients_vector.approach_vector(1), 2) + pow(plane_coefficients_vector.approach_vector(2), 2));
+        float object_normal_norm = sqrt(pow(object_normal_grab.normal_x, 2) + pow(object_normal_grab.normal_y, 2) + pow(object_normal_grab.normal_z, 2));
 
         float normal_likelihood = -1.0 * (plane_coefficients_vector.approach_vector(0) * object_normal_grab.normal_x 
                                         + plane_coefficients_vector.approach_vector(1) * object_normal_grab.normal_y 
-                                        + plane_coefficients_vector.approach_vector(2) * object_normal_grab.normal_z);
+                                        + plane_coefficients_vector.approach_vector(2) * object_normal_grab.normal_z)/(approach_vector_norm*object_normal_norm);
+
 
         std_msgs::Float64 normal_likelihood_msg;
         normal_likelihood_msg.data = normal_likelihood;
@@ -1543,9 +1548,13 @@ pcl_utils::RL_Env_msg do_PointcloudProcess()
 
         pub_pose_left.publish (object_pose_left);
 
+
+        float open_vector_norm = sqrt(pow(plane_coefficients_vector.open_vector(0), 2) + pow(plane_coefficients_vector.open_vector(1), 2) + pow(plane_coefficients_vector.open_vector(2), 2));
+        float object_normal_left_norm = sqrt(pow(object_normal_left.normal_x, 2) + pow(object_normal_left.normal_y, 2) + pow(object_normal_left.normal_z, 2));
+
         float left_likelihood = (plane_coefficients_vector.open_vector(0) * object_normal_left.normal_x 
                               + plane_coefficients_vector.open_vector(1) * object_normal_left.normal_y 
-                              + plane_coefficients_vector.open_vector(2) * object_normal_left.normal_z);
+                              + plane_coefficients_vector.open_vector(2) * object_normal_left.normal_z)/(open_vector_norm*object_normal_left_norm);
 
         if (isnan(left_likelihood))
         {
@@ -1605,9 +1614,13 @@ pcl_utils::RL_Env_msg do_PointcloudProcess()
         
         pub_pose_right.publish (object_pose_right);
 
+        float open_vector_norm = sqrt(pow(plane_coefficients_vector.open_vector(0), 2) + pow(plane_coefficients_vector.open_vector(1), 2) + pow(plane_coefficients_vector.open_vector(2), 2));
+        float object_normal_right_norm = sqrt(pow(object_normal_right.normal_x, 2) + pow(object_normal_right.normal_y, 2) + pow(object_normal_right.normal_z, 2));
+
+
         float right_likelihood = (-1.0*plane_coefficients_vector.open_vector(0) * object_normal_right.normal_x 
                                 + -1.0*plane_coefficients_vector.open_vector(1) * object_normal_right.normal_y 
-                                + -1.0*plane_coefficients_vector.open_vector(2) * object_normal_right.normal_z);
+                                + -1.0*plane_coefficients_vector.open_vector(2) * object_normal_right.normal_z)/(open_vector_norm*object_normal_right_norm);
 
 
         if (isnan(right_likelihood))
@@ -1633,7 +1646,9 @@ pcl_utils::RL_Env_msg do_PointcloudProcess()
 
       std_msgs::Float64 approach_likelihood_msg;
       // approach to (0, 0, 1) is better
-      float approach_likelihood =  plane_coefficients_vector.approach_vector(2);
+      float approach_vector_norm = sqrt(pow(plane_coefficients_vector.approach_vector(0), 2) + pow(plane_coefficients_vector.approach_vector(1), 2) + pow(plane_coefficients_vector.approach_vector(2), 2));
+      float approach_likelihood =  plane_coefficients_vector.approach_vector(2)/(approach_vector_norm);
+      cout << "approach_likelihood " << approach_likelihood << endl;
       if (isnan(approach_likelihood))
       {
         cout << " approach_likelihood Not a Number FOUNDED!!!" <<endl;
@@ -1677,7 +1692,9 @@ pcl_utils::RL_Env_msg do_PointcloudProcess()
                               Grab_Cloud_viewpoint_Translation, Grab_Cloud_viewpoint_Rotation, Grab_Cloud_Normal_PwPs,
                               Mapping_width/2, Mapping_high/2, 300, 300);
 
-      cv::Mat Grab_element = getStructuringElement(cv::MORPH_RECT, cv::Size(9, 9));  
+      // cv::Mat Grab_element = getStructuringElement(cv::MORPH_RECT, cv::Size(9, 9));  
+      cv::Mat Grab_element = getStructuringElement(cv::MORPH_RECT, cv::Size(15, 15));  
+
       
       // cv::dilate(Grab_Cloud_Approach_RGB_Image, Grab_Cloud_Approach_RGB_Image, Grab_element);
       cv::dilate(Grab_Cloud_Approach_Depth_Image, Grab_Cloud_Approach_Depth_Image, Grab_element); 
