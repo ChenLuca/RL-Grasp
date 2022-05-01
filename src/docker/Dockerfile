@@ -5,6 +5,14 @@ ENV TZ=Asia/Taipei
 COPY ./requirements.txt ./requirements.txt 
 
 RUN /usr/bin/python3 -m pip install --upgrade pip
+
+# public GPG key error
+RUN apt-get install wget
+RUN wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/cuda-ubuntu2004.pin
+RUN mv cuda-ubuntu2004.pin /etc/apt/preferences.d/cuda-repository-pin-600
+RUN apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/3bf863cc.pub
+RUN add-apt-repository "deb https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/ /"
+
 RUN apt-get update
 
 RUN apt-get install vim -y
@@ -21,8 +29,9 @@ RUN apt-get install ros-noetic-desktop-full -y
 RUN source /opt/ros/noetic/setup.bash
 RUN echo "source /opt/ros/noetic/setup.bash" >> ~/.bashrc
 RUN source ~/.bashrc
+RUN apt-get update
 
-RUN apt-get install ros-noetic-soem -y
-RUN apt-get install ros-noetic-ddynamic-reconfigure -y
+RUN apt-get install ros-noetic-soem -y --fix-missing
+RUN apt-get install ros-noetic-ddynamic-reconfigure -y --fix-missing
 RUN pip3 install rospkg
 RUN pip3 install pyyaml
