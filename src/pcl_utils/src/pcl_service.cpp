@@ -1397,8 +1397,8 @@ pcl_utils::RL_Env_msg do_PointcloudProcess()
 
       // cout << "grasp_3D[0] " << grasp_3D[0] << ", grasp_3D[1] " << grasp_3D[1] << ", grasp_3D[2] " << grasp_3D[2] << endl;
 
-      float z_dist = 0.05;
-      // float z_dist = 0.03;
+      // float z_dist = 0.05;
+      float z_dist = 0.03;
 
       //rotate point Cloud
       do_Rotate_2(grab_cloud, 
@@ -1701,8 +1701,8 @@ pcl_utils::RL_Env_msg do_PointcloudProcess()
                               Grab_Cloud_viewpoint_Translation, Grab_Cloud_viewpoint_Rotation, Grab_Cloud_Normal_PwPs,
                               Mapping_width/2, Mapping_high/2, 300, 300);
 
-      cv::Mat Grab_element = getStructuringElement(cv::MORPH_RECT, cv::Size(9, 9));  
-      // cv::Mat Grab_element = getStructuringElement(cv::MORPH_RECT, cv::Size(15, 15));  
+      // cv::Mat Grab_element = getStructuringElement(cv::MORPH_RECT, cv::Size(9, 9));  
+      cv::Mat Grab_element = getStructuringElement(cv::MORPH_RECT, cv::Size(15, 15));  
 
       
       // cv::dilate(Grab_Cloud_Approach_RGB_Image, Grab_Cloud_Approach_RGB_Image, Grab_element);
