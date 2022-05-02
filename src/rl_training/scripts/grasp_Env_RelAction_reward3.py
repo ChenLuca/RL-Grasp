@@ -335,8 +335,8 @@ class GraspEnv(py_environment.PyEnvironment):
 
         # rotation_angle_x, rotation_angle_y = self._set_action(self.num_actions, action_value)
 
-        rotation_angle_y = action_value -3
-        rotation_angle_x = action_value -3
+        rotation_angle_y = action_value -2
+        rotation_angle_x = action_value -2
         
         self.rotate_x = self.rotate_x + (rotation_angle_x * rotation_angle_15)
         self.rotate_y = self.rotate_y + (rotation_angle_y * rotation_angle_15)
@@ -381,7 +381,7 @@ class GraspEnv(py_environment.PyEnvironment):
             self.Maxapproach_stddev = self.approach_stddev
 
 
-        self._reward =  + (self.pointLikelihood_right_finger) 
+        self._reward =  (self.pointLikelihood_right_finger) 
 
         # self._reward =  - 1.0*(self.NormalDepthNonZero/self.MaxNormalDepthNonZero) \
         #                 + (self.pointLikelihood_right_finger) \

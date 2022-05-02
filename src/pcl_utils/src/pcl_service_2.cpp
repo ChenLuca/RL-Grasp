@@ -1623,7 +1623,7 @@ pcl_utils::RL_Env_msg do_PointcloudProcess()
                                 + -1.0*plane_coefficients_vector.open_vector(1) * object_normal_right.normal_y 
                                 + -1.0*plane_coefficients_vector.open_vector(2) * object_normal_right.normal_z)/(open_vector_norm*object_normal_right_norm + 0.00000001);
 
-        right_likelihood = abs(right_likelihood);
+        right_likelihood = -1 * abs(right_likelihood);
 
         cout << "abs right_likelihood " << right_likelihood << endl;
 
