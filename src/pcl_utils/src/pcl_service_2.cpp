@@ -1487,9 +1487,9 @@ pcl_utils::RL_Env_msg do_PointcloudProcess()
         float approach_vector_norm = sqrt(pow(plane_coefficients_vector.approach_vector(0), 2) + pow(plane_coefficients_vector.approach_vector(1), 2) + pow(plane_coefficients_vector.approach_vector(2), 2));
         float object_normal_norm = sqrt(pow(object_normal_grab.normal_x, 2) + pow(object_normal_grab.normal_y, 2) + pow(object_normal_grab.normal_z, 2));
 
-        float normal_likelihood = -1.0 * (plane_coefficients_vector.approach_vector(0) * object_normal_grab.normal_x 
-                                        + plane_coefficients_vector.approach_vector(1) * object_normal_grab.normal_y 
-                                        + plane_coefficients_vector.approach_vector(2) * object_normal_grab.normal_z)/(approach_vector_norm*object_normal_norm + 0.00000001);
+        float normal_likelihood =  ((-1.0 *plane_coefficients_vector.approach_vector(0)) * object_normal_grab.normal_x 
+                                        + (-1.0 *plane_coefficients_vector.approach_vector(1)) * object_normal_grab.normal_y 
+                                        + (-1.0 *plane_coefficients_vector.approach_vector(2))* object_normal_grab.normal_z)/(approach_vector_norm*object_normal_norm + 0.00000001);
 
 
         std_msgs::Float64 normal_likelihood_msg;
