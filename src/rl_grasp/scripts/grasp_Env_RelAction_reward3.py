@@ -105,7 +105,7 @@ class GraspEnv(py_environment.PyEnvironment):
     def __init__(self, input_image_size, phase, step_lengtn):
         
         # must be odd number
-        self.num_actions = 49
+        self.num_actions = 5
 
         self.input_image_size = input_image_size
 
@@ -114,6 +114,7 @@ class GraspEnv(py_environment.PyEnvironment):
         self._step_lengh = step_lengtn
 
         print("!!!!!!!!!!!!!!!!!!!!self._step_lengh: ", self._step_lengh)
+        print("grasp_Env_RelAction_reward3")
 
         self.phase = phase
 
@@ -332,15 +333,20 @@ class GraspEnv(py_environment.PyEnvironment):
         # 15 degree
         rotation_angle_15 = (math.pi*15)/180 
 
-        rotation_angle_x, rotation_angle_y = self._set_action(self.num_actions, action_value)
+        # rotation_angle_x, rotation_angle_y = self._set_action(self.num_actions, action_value)
 
+        rotation_angle_y = action_value -2
+        rotation_angle_x = action_value -2
+        
         self.rotate_x = self.rotate_x + (rotation_angle_x * rotation_angle_15)
         self.rotate_y = self.rotate_y + (rotation_angle_y * rotation_angle_15)
 
-        rotation.x = self.rotate_x
+        # rotation.x = self.rotate_x
         rotation.y = self.rotate_y
 
         self.pub_AngleAxisRotation.publish(rotation)
+
+        print("action_value ", action_value)
 
     def _update_ROS_data(self):
 
@@ -374,13 +380,17 @@ class GraspEnv(py_environment.PyEnvironment):
         if self.approach_stddev > self.Maxapproach_stddev:
             self.Maxapproach_stddev = self.approach_stddev
 
-        self._reward =  - 1.0*(self.NormalDepthNonZero/self.MaxNormalDepthNonZero) \
-                        + (self.pointLikelihood_right_finger) \
-                        + (self.approach_mean/self.Maxapproach_mean) \
-                        + (self.approach_stddev/self.Maxapproach_stddev) \
-                        - (self._step_counter)*0.1 \
-                        + 1.0*(self.apporachLikelihood) \
-                        + self.pointLikelihood_grab_cloud
+
+        self._reward =  (self.pointLikelihood_right_finger) 
+
+        # self._reward =  - 1.0*(self.NormalDepthNonZero/self.MaxNormalDepthNonZero) \
+        #                 + (self.pointLikelihood_right_finger) \
+        #                 + (self.approach_mean/self.Maxapproach_mean) \
+        #                 + (self.approach_stddev/self.Maxapproach_stddev) \
+        #                 - (self._step_counter)*0.1 \
+        #                 + self.pointLikelihood_grab_cloud
+
+                        # + 1.0*(self.apporachLikelihood) \
 
                         # + self.pointLikelihood_left_finger)
                         # + (self.principal_curvatures_gaussian) 

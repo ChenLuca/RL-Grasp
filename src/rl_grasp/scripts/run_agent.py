@@ -70,14 +70,16 @@ from tf_agents.trajectories import time_step as ts
 
 tf.compat.v1.enable_v2_behavior()
 
-from grasp_Env_RelAction_reward2 import GraspEnv
+from grasp_Env_RelAction_reward3 import GraspEnv
 
 
 if __name__ == '__main__':
 
     rospy.init_node('Reload_Reinforcement_Learning_Agent', anonymous=True)
+
+    step_length = 3
     
-    environment = GraspEnv([120, 160], "inference", 3)
+    environment = GraspEnv([120, 160], "inference", step_length)
 
     time.sleep(1)
 
@@ -90,7 +92,16 @@ if __name__ == '__main__':
     print("file_path: ", file_path)
 
     # C51
-    policy_dir = os.path.join(file_path + "/trained-model" + "/C51/C51_220428_1751_step_length_1_reward_v2/Model/C51_policy_830.0_5.4259133")
+    # policy_dir = os.path.join(file_path + "/trained-model" + "/C51/C51_220428_1751_step_length_1_reward_v2/Model/C51_policy_830.0_5.4259133")
+
+    # 20220503
+    # policy_dir = os.path.join(file_path + "/trained-model" + "/DQN/DQN_220502_1726_dqn_reward2/Model/DQN_policy_327.0_5.9956946")
+    # policy_dir = os.path.join(file_path + "/trained-model" + "/DQN/DQN_220502_1032_service2_reward3_only_y_action/Model/DQN_policy_120.0_-3.2558465")
+
+    #20220504 new dataset
+
+    policy_dir = os.path.join(file_path + "/trained-model" + "/DQN/DQN_220503_1423_service2_reward2_newdataset/Model/DQN_policy_28.0_-1.3549198")
+
 
     saved_policy = tf.saved_model.load(policy_dir)
 
@@ -99,7 +110,7 @@ if __name__ == '__main__':
         time_step = tf_env.reset()
         total_reward = 0
         time1 = time.time()
-        for i in range(3):
+        for i in range(step_length):
             action_step = saved_policy.action(time_step)
             time_step = tf_env.step(action_step.action)
             total_reward += time_step.reward.numpy()
