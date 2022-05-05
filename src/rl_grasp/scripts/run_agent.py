@@ -70,7 +70,7 @@ from tf_agents.trajectories import time_step as ts
 
 tf.compat.v1.enable_v2_behavior()
 
-from grasp_Env_RelAction_reward3 import GraspEnv
+from grasp_Env_RelAction_reward4 import GraspEnv
 
 
 if __name__ == '__main__':
@@ -98,10 +98,14 @@ if __name__ == '__main__':
     # policy_dir = os.path.join(file_path + "/trained-model" + "/DQN/DQN_220502_1726_dqn_reward2/Model/DQN_policy_327.0_5.9956946")
     # policy_dir = os.path.join(file_path + "/trained-model" + "/DQN/DQN_220502_1032_service2_reward3_only_y_action/Model/DQN_policy_120.0_-3.2558465")
 
-    #20220504 new dataset
+    # 20220504 new dataset
+    # policy_dir = os.path.join(file_path + "/trained-model" + "/DQN/DQN_220503_1423_service2_reward2_newdataset/Model/DQN_policy_28.0_-1.3549198")
 
-    policy_dir = os.path.join(file_path + "/trained-model" + "/DQN/DQN_220503_1423_service2_reward2_newdataset/Model/DQN_policy_28.0_-1.3549198")
+    # 20220505 new dataset
+    # not bad!
+    policy_dir = os.path.join(file_path + "/trained-model" + "/DQN/DQN_220504_1054_service2_reward4_newdataset/Model/DQN_policy_80.0_5.261268")
 
+    # policy_dir = os.path.join(file_path + "/trained-model" + "/DQN/DQN_220504_1054_service2_reward4_newdataset/Model/DQN_policy_71.0_4.427011")
 
     saved_policy = tf.saved_model.load(policy_dir)
 

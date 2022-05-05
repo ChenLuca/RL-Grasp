@@ -109,12 +109,12 @@ class GraspEnv(py_environment.PyEnvironment):
 
         self.input_image_size = input_image_size
 
-        self.input_channel = 2
+        self.input_channel = 1
 
         self._step_lengh = step_lengtn
 
-        print("!!!!!!!!!!!!!!!!!!!!self._step_lengh: ", self._step_lengh)
-        print("grasp_Env_RelAction_reward4")
+        print("self._step_lengh: ", self._step_lengh)
+        print("grasp_Env_RelAction_reward5")
 
         self.phase = phase
 
@@ -355,9 +355,9 @@ class GraspEnv(py_environment.PyEnvironment):
         # print("--- %s seconds ---" % (time.time() - start_time))
 
         # self._state["depth_grab"] = np.concatenate((self.grab_normal_depth_image, self.grab_approach_depth_image, self.grab_open_depth_image), axis=-1)
-        self._state["depth_grab"] = np.concatenate((self.grab_normal_depth_image, self.grab_approach_depth_image), axis=-1)
+        # self._state["depth_grab"] = np.concatenate((self.grab_normal_depth_image, self.grab_approach_depth_image), axis=-1)
 
-        # self._state["depth_grab"] = self.grab_normal_depth_image
+        self._state["depth_grab"] = self.grab_normal_depth_image
 
         self._update_reward()
 
@@ -380,10 +380,7 @@ class GraspEnv(py_environment.PyEnvironment):
         if self.approach_stddev > self.Maxapproach_stddev:
             self.Maxapproach_stddev = self.approach_stddev
 
-
         self._reward =  (self.pointLikelihood_right_finger) + self.pointLikelihood_grab_cloud
-
-
 
         # self._reward =  - 1.0*(self.NormalDepthNonZero/self.MaxNormalDepthNonZero) \
         #                 + (self.pointLikelihood_right_finger) \
@@ -391,11 +388,10 @@ class GraspEnv(py_environment.PyEnvironment):
         #                 + (self.approach_stddev/self.Maxapproach_stddev) \
         #                 - (self._step_counter)*0.1 \
         #                 + 1.0*(self.apporachLikelihood)
-
-                        # + self.pointLikelihood_left_finger)
-                        # + (self.principal_curvatures_gaussian) 
-                        # + 1.0*(self._number_of_grab_pointClouds/self.Max_number_of_grab_pointClouds) 
-                        # + 1.0*(self.OpenDepthNonZero/self.MaxOpenDepthNonZero) 
+        #                 + self.pointLikelihood_left_finger)
+        #                 + (self.principal_curvatures_gaussian) 
+        #                 + 1.0*(self._number_of_grab_pointClouds/self.Max_number_of_grab_pointClouds) 
+        #                 + 1.0*(self.OpenDepthNonZero/self.MaxOpenDepthNonZero) 
 
     def _step(self, action):
 
