@@ -202,7 +202,7 @@ eval_interval = 1000
 
 if __name__ == '__main__':
 
-    print("os.path.dirname(__file__)  ", os.path.dirname(__file__))
+    # print("os.path.dirname(__file__)  ", os.path.dirname(__file__))
 
     file_path = os.path.dirname(__file__)
 
@@ -219,7 +219,6 @@ if __name__ == '__main__':
 
     handle_loadPointCloud = rospy.ServiceProxy('/load_pointcloud', loadPointCloud)
     handle_rl_is_success = rospy.ServiceProxy('/rl_grasp_is_success', rl_is_success)
-
 
     do_loadPointCloud(1)
 
@@ -335,7 +334,7 @@ if __name__ == '__main__':
                 avg_return, success_rate = compute_avg_return(tf_env, agent.policy, 5)
 
                 save_agent(file_path + "/trained-model/C51/" + "C51_" + str(dt) + "_" + str(description) + \
-                            "/Model/",'C51_policy_' + str(step/1000) + "_" + str(avg_return), agent.policy)
+                            "/Model/",'C51_policy_' + str(step/1000) + "_avg_return_" + str(avg_return) + "_success_rate_" + str(success_rate), agent.policy)
 
                 print('step = {0}: Average Return = {1}'.format(step, avg_return))
                 print('step = {0}: Success Rate = {1}'.format(0, success_rate))

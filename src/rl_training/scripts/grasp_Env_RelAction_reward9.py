@@ -114,9 +114,10 @@ class GraspEnv(py_environment.PyEnvironment):
         self.input_channel = 2
 
         self._step_lengh = step_lengtn
+        
+        print("grasp_Env_RelAction_reward9")
 
         print("self._step_lengh: ", self._step_lengh)
-        print("grasp_Env_RelAction_reward9")
 
         self.phase = phase
 
@@ -452,6 +453,7 @@ class GraspEnv(py_environment.PyEnvironment):
         if self.pointLikelihood_right_finger > -0.12:
             self._episode_ended = True
             self._is_success = 1
+            self._step_counter = 0
             return ts.termination(self._state, 1.0)
 
         if self.action_stop:
