@@ -1,0 +1,5 @@
+<launch>
+	<node name="pcl_service" pkg="pcl_utils" type="pcl_service_2_rl_testing" />
+	<node name="sample_q_image" pkg="dl_grasp" type="sample_q_image.py" />
+	<node name="RL_Grasping" pkg="rl_grasp" type="run_agent.py" output="screen" />
+</launch>

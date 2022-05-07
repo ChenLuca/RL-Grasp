@@ -348,7 +348,7 @@ class GraspEnv(py_environment.PyEnvironment):
 
         self.pub_AngleAxisRotation.publish(rotation)
 
-        # print("action_value ", action_value)
+        print("action_value ", action_value)
 
     def _update_ROS_data(self):
 
@@ -425,7 +425,7 @@ class GraspEnv(py_environment.PyEnvironment):
             print("out of angle!")
             return ts.termination(self._state, -30)
 
-        if self.pointLikelihood_right_finger > -0.2: 
+        if self.pointLikelihood_right_finger > -0.12: 
             self._is_success = 1
             return ts.termination(self._state, 5.0)
 

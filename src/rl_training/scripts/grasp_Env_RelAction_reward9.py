@@ -34,6 +34,8 @@ from sensor_msgs.msg import Image
 from rl_training.msg import AngleAxis_rotation_msg
 from rl_training.srv import loadPointCloud
 from rl_training.srv import get_RL_Env
+from rl_training.srv import rl_is_success
+
 import time
 
 import sensor_msgs.point_cloud2 as pc2
@@ -105,7 +107,7 @@ class GraspEnv(py_environment.PyEnvironment):
     def __init__(self, input_image_size, phase, step_lengtn):
         
         # must be odd number
-        self.num_actions = 25
+        self.num_actions = 81
 
         self.input_image_size = input_image_size
 
@@ -114,7 +116,7 @@ class GraspEnv(py_environment.PyEnvironment):
         self._step_lengh = step_lengtn
 
         print("self._step_lengh: ", self._step_lengh)
-        print("grasp_Env_RelAction_reward8")
+        print("grasp_Env_RelAction_reward9")
 
         self.phase = phase
 
@@ -166,6 +168,7 @@ class GraspEnv(py_environment.PyEnvironment):
 
         # Create ROS publisher for rotate gripper axis of normal, approach and open vector (the actions of reinforcement learning agent)
         self.pub_AngleAxisRotation = rospy.Publisher('/grasp_training/AngleAxis_rotation', AngleAxis_rotation_msg, queue_size=10)
+        rl_is_success_server = rospy.Service('/rl_grasp_is_success', rl_is_success, self._rl_is_success)
 
     def get_RL_Env_data(self, req):
         # print("Request RL Env !")
@@ -303,6 +306,39 @@ class GraspEnv(py_environment.PyEnvironment):
         # print("reset!")
         return ts.restart(self._state)
 
+    def _check_positive(self, action):
+        if action > 0:
+            return 1
+        elif action == 0:
+            return 0
+        else:
+            return -1
+
+    def _set_action_degree(self, action):
+
+        # 3 degree
+        rotation_angle_3 = (math.pi*3)/180
+
+        # 7  degree
+        rotation_angle_7 = (math.pi*7)/180 
+
+        # 15 degree
+        rotation_angle_15 = (math.pi*15)/180 
+
+        # 30 degree
+        rotation_angle_30 = (math.pi*30)/180 
+
+        if abs(action) == 4 :
+            return self._check_positive(action) * rotation_angle_30
+        elif abs(action) == 3:
+            return self._check_positive(action) * rotation_angle_15
+        elif abs(action) == 2:
+            return self._check_positive(action) * rotation_angle_7
+        elif abs(action) == 1:
+            return self._check_positive(action) * rotation_angle_3
+        else:
+            return 0
+
     def _set_action(self, num_actions, inpt_action):
         inpt_action = inpt_action
         
@@ -311,7 +347,7 @@ class GraspEnv(py_environment.PyEnvironment):
         x = int(inpt_action/num_actions_sqrt) - math.floor(num_actions_sqrt/2)
         y = int(inpt_action%num_actions_sqrt) - math.floor(num_actions_sqrt/2)
 
-        return x , y
+        return self._set_action_degree(x) , self._set_action_degree(y)
 
     def _rotate_grasp(self, action_value):
         
@@ -320,35 +356,21 @@ class GraspEnv(py_environment.PyEnvironment):
         rotation.y = 0
         rotation.z = 0
 
-        # 1 degree
-        rotation_angle_s = math.pi/180
-
-        # 10 degree
-        rotation_angle_m = (math.pi*5)/180
-
-        # 20  degree
-        rotation_angle_l = (math.pi*20)/180 
-
-        # 10 degree
-        rotation_angle_10 = (math.pi*10)/180 
-
-        # 15 degree
-        rotation_angle_15 = (math.pi*15)/180 
-
         rotation_angle_x, rotation_angle_y = self._set_action(self.num_actions, action_value)
 
         # rotation_angle_y = action_value -2
         # rotation_angle_x = action_value -2
         
-        self.rotate_x = self.rotate_x + (rotation_angle_x * rotation_angle_15)
-        self.rotate_y = self.rotate_y + (rotation_angle_y * rotation_angle_15)
+        self.rotate_x = self.rotate_x + rotation_angle_x 
+        self.rotate_y = self.rotate_y + rotation_angle_y 
 
         rotation.x = self.rotate_x
         rotation.y = self.rotate_y
 
         self.pub_AngleAxisRotation.publish(rotation)
 
-        print("action_value ", action_value)
+        # print("action_value ", action_value)
+        # print("self.rotate_x: {}, self.rotate_y: {}".format(self.rotate_x/math.pi*180.0, self.rotate_y/math.pi*180.0))
 
     def _update_ROS_data(self):
 
@@ -396,6 +418,9 @@ class GraspEnv(py_environment.PyEnvironment):
     def is_success(self):
         return self._is_success
 
+    def _rl_is_success(self, req):
+        return self.is_success()
+            
     def _step(self, action):
 
         if self._episode_ended:
@@ -421,12 +446,13 @@ class GraspEnv(py_environment.PyEnvironment):
         if (abs(self.rotate_x) > (math.pi*60)/180) or (abs(self.rotate_y) > (math.pi*60)/180):
             self._episode_ended = True
             self._step_counter = 0
-            print("out of angle!")
+            # print("out of angle!")
             return ts.termination(self._state, -30)
 
-        if self.pointLikelihood_right_finger > -0.12: 
+        if self.pointLikelihood_right_finger > -0.12:
+            self._episode_ended = True
             self._is_success = 1
-            return ts.termination(self._state, 5.0)
+            return ts.termination(self._state, 1.0)
 
         if self.action_stop:
             self.action_stop = False

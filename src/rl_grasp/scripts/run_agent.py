@@ -70,7 +70,7 @@ from tf_agents.trajectories import time_step as ts
 
 tf.compat.v1.enable_v2_behavior()
 
-from grasp_Env_RelAction_reward5 import GraspEnv
+from grasp_Env_RelAction_reward8 import GraspEnv
 
 
 if __name__ == '__main__':
@@ -89,8 +89,6 @@ if __name__ == '__main__':
 
     file_path = os.path.dirname(__file__)
 
-    print("file_path: ", file_path)
-
     # C51
     # policy_dir = os.path.join(file_path + "/trained-model" + "/C51/C51_220428_1751_step_length_1_reward_v2/Model/C51_policy_830.0_5.4259133")
 
@@ -105,12 +103,12 @@ if __name__ == '__main__':
     # not bad!
     # policy_dir = os.path.join(file_path + "/trained-model" + "/DQN/DQN_220504_1054_service2_reward4_newdataset/Model/DQN_policy_80.0_5.261268")
 
-    #20220506 newdataset
+    # 20220506 newdataset
     # reward 5
     # # ---bad 
     # policy_dir = os.path.join(file_path + "/trained-model" + "/DQN/DQN_220505_1144_dqn_service2_reward5_steplength5_onlynormaldepth/Model/DQN_policy_37.0_1.9077859")
     # # ---great !
-    policy_dir = os.path.join(file_path + "/trained-model" + "/C51/C51_220505_1145_c51_service2_reward5_steplength5_onlynormaldepth/Model/C51_policy_143.0_4.103627")
+    # policy_dir = os.path.join(file_path + "/trained-model" + "/C51/C51_220505_1145_c51_service2_reward5_steplength5_onlynormaldepth/Model/C51_policy_143.0_4.103627")
 
     # reward 6
     # # ---bad
@@ -118,6 +116,13 @@ if __name__ == '__main__':
 
     # ---not bad
     # policy_dir = os.path.join(file_path + "/trained-model" + "/C51/C51_220505_1232_c51_service2_reward6_steplength5_onlynormaldepth_xyaction/Model/C51_policy_77.0_0.99006736")
+
+    # 20220507 newdataset
+    # reward 7
+    # --not bad
+    # policy_dir = os.path.join(file_path + "/trained-model" + "/C51/C51_220506_1547_service2_reward7_steplength5_onlynormaldepth/Model/C51_policy_242.0_2.973694")
+    # reward 8
+    policy_dir = os.path.join(file_path + "/trained-model" + "/C51/C51_220506_1603_c51_service2_reward8_steplength5_input2ch/Model/C51_policy_188.0_2.8839202")
 
 
     saved_policy = tf.saved_model.load(policy_dir)
@@ -137,6 +142,8 @@ if __name__ == '__main__':
         return total_reward
 
     s = rospy.Service('/get_agent_action', get_Agent_action, handle_get_agent_action)
+
+    print("[agent ready]")
 
     rospy.spin()
 
