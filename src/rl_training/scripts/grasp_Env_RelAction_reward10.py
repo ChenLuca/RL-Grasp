@@ -107,15 +107,15 @@ class GraspEnv(py_environment.PyEnvironment):
     def __init__(self, input_image_size, phase, step_lengtn):
         
         # must be odd number
-        self.num_actions = 81
+        self.num_actions = 9
 
         self.input_image_size = input_image_size
 
-        self.input_channel = 2
+        self.input_channel = 1
 
         self._step_lengh = step_lengtn
         
-        print("grasp_Env_RelAction_reward9")
+        print("grasp_Env_RelAction_reward10")
 
         print("self._step_lengh: ", self._step_lengh)
 
@@ -356,13 +356,9 @@ class GraspEnv(py_environment.PyEnvironment):
         rotation.x = 0
         rotation.y = 0
         rotation.z = 0
-
-        rotation_angle_x, rotation_angle_y = self._set_action(self.num_actions, action_value)
-
-        # rotation_angle_y = action_value -2
-        # rotation_angle_x = action_value -2
         
-        self.rotate_x = self.rotate_x + rotation_angle_x 
+        rotation_angle_y = self._set_action_degree((action_value - 4))
+        
         self.rotate_y = self.rotate_y + rotation_angle_y 
 
         rotation.x = self.rotate_x
@@ -379,8 +375,8 @@ class GraspEnv(py_environment.PyEnvironment):
         self.get_RL_Env_data(1)
         # print("--- %s seconds ---" % (time.time() - start_time))
         # self._state["depth_grab"] = np.concatenate((self.grab_normal_depth_image, self.grab_approach_depth_image, self.grab_open_depth_image), axis=-1)
-        self._state["depth_grab"] = np.concatenate((self.grab_normal_depth_image, self.grab_approach_depth_image), axis=-1)
-        # self._state["depth_grab"] = self.grab_normal_depth_image
+        # self._state["depth_grab"] = np.concatenate((self.grab_normal_depth_image, self.grab_approach_depth_image), axis=-1)
+        self._state["depth_grab"] = self.grab_normal_depth_image
 
         self._update_reward()
 
@@ -403,7 +399,7 @@ class GraspEnv(py_environment.PyEnvironment):
         if self.approach_stddev > self.Maxapproach_stddev:
             self.Maxapproach_stddev = self.approach_stddev
 
-        self._reward =  (self.pointLikelihood_right_finger) + self.pointLikelihood_grab_cloud - 1.0*(self.NormalDepthNonZero/self.MaxNormalDepthNonZero) - 0.1*(self._step_counter)
+        self._reward =  (self.pointLikelihood_right_finger) + self.pointLikelihood_grab_cloud - 0.1*(self._step_counter)
 
         # self._reward =  - 1.0*(self.NormalDepthNonZero/self.MaxNormalDepthNonZero) \
         #                 + (self.pointLikelihood_right_finger) \

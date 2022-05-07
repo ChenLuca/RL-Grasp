@@ -77,7 +77,7 @@ from tf_agents.trajectories import time_step as ts
 from rl_training.srv import rl_is_success
 
 
-from grasp_Env_RelAction_reward9 import GraspEnv
+from grasp_Env_RelAction_reward10 import GraspEnv
 
 tf.compat.v1.enable_v2_behavior()
 
@@ -144,8 +144,8 @@ def compute_avg_return(environment, policy, num_episodes=10):
             while not time_step.is_last():
                 action_step = policy.action(time_step)
                 time_step = environment.step(action_step.action)
-                grasp_result = check_rl_is_success(1)
                 episode_return += time_step.reward
+            grasp_result = check_rl_is_success(1)
             total_success += grasp_result.is_success
             total_return += episode_return
 
