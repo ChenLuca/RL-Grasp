@@ -70,14 +70,14 @@ from tf_agents.trajectories import time_step as ts
 
 tf.compat.v1.enable_v2_behavior()
 
-from grasp_Env_RelAction_reward4 import GraspEnv
+from grasp_Env_RelAction_reward5 import GraspEnv
 
 
 if __name__ == '__main__':
 
     rospy.init_node('Reload_Reinforcement_Learning_Agent', anonymous=True)
 
-    step_length = 3
+    step_length = 5
     
     environment = GraspEnv([120, 160], "inference", step_length)
 
@@ -103,9 +103,22 @@ if __name__ == '__main__':
 
     # 20220505 new dataset
     # not bad!
-    policy_dir = os.path.join(file_path + "/trained-model" + "/DQN/DQN_220504_1054_service2_reward4_newdataset/Model/DQN_policy_80.0_5.261268")
+    # policy_dir = os.path.join(file_path + "/trained-model" + "/DQN/DQN_220504_1054_service2_reward4_newdataset/Model/DQN_policy_80.0_5.261268")
 
-    # policy_dir = os.path.join(file_path + "/trained-model" + "/DQN/DQN_220504_1054_service2_reward4_newdataset/Model/DQN_policy_71.0_4.427011")
+    #20220506 newdataset
+    # reward 5
+    # # ---bad 
+    # policy_dir = os.path.join(file_path + "/trained-model" + "/DQN/DQN_220505_1144_dqn_service2_reward5_steplength5_onlynormaldepth/Model/DQN_policy_37.0_1.9077859")
+    # # ---great !
+    policy_dir = os.path.join(file_path + "/trained-model" + "/C51/C51_220505_1145_c51_service2_reward5_steplength5_onlynormaldepth/Model/C51_policy_143.0_4.103627")
+
+    # reward 6
+    # # ---bad
+    # policy_dir = os.path.join(file_path + "/trained-model" + "/DQN/DQN_220505_1229_dqn_service2_reward6_steplength5_onlynormaldepth_xyaction/Model/DQN_policy_124.0_-2.7130487")
+
+    # ---not bad
+    # policy_dir = os.path.join(file_path + "/trained-model" + "/C51/C51_220505_1232_c51_service2_reward6_steplength5_onlynormaldepth_xyaction/Model/C51_policy_77.0_0.99006736")
+
 
     saved_policy = tf.saved_model.load(policy_dir)
 
