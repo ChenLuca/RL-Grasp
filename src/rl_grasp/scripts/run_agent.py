@@ -70,7 +70,7 @@ from tf_agents.trajectories import time_step as ts
 
 tf.compat.v1.enable_v2_behavior()
 
-from grasp_Env_RelAction_reward8 import GraspEnv
+from grasp_Env_RelAction_reward5 import GraspEnv
 
 
 if __name__ == '__main__':
@@ -108,7 +108,7 @@ if __name__ == '__main__':
     # # ---bad 
     # policy_dir = os.path.join(file_path + "/trained-model" + "/DQN/DQN_220505_1144_dqn_service2_reward5_steplength5_onlynormaldepth/Model/DQN_policy_37.0_1.9077859")
     # # ---great !
-    # policy_dir = os.path.join(file_path + "/trained-model" + "/C51/C51_220505_1145_c51_service2_reward5_steplength5_onlynormaldepth/Model/C51_policy_143.0_4.103627")
+    policy_dir = os.path.join(file_path + "/trained-model" + "/C51/C51_220505_1145_c51_service2_reward5_steplength5_onlynormaldepth/Model/C51_policy_143.0_4.103627")
 
     # reward 6
     # # ---bad
@@ -122,7 +122,7 @@ if __name__ == '__main__':
     # --not bad
     # policy_dir = os.path.join(file_path + "/trained-model" + "/C51/C51_220506_1547_service2_reward7_steplength5_onlynormaldepth/Model/C51_policy_242.0_2.973694")
     # reward 8
-    policy_dir = os.path.join(file_path + "/trained-model" + "/C51/C51_220506_1603_c51_service2_reward8_steplength5_input2ch/Model/C51_policy_188.0_2.8839202")
+    # policy_dir = os.path.join(file_path + "/trained-model" + "/C51/C51_220506_1603_c51_service2_reward8_steplength5_input2ch/Model/C51_policy_188.0_2.8839202")
 
 
     saved_policy = tf.saved_model.load(policy_dir)

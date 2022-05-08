@@ -212,7 +212,7 @@ if __name__ == '__main__':
 
     tb = tensorboardX.SummaryWriter(file_path + "/trained-model/C51/" + "C51_" + str(dt) + "_" + str(description) + "/")
 
-    _step_lengtn = 9
+    _step_lengtn = 5
     
     #init ros
     rospy.init_node('Reinforcement_Learning_Training', anonymous=True)
