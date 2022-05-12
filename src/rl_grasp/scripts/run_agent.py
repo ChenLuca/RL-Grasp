@@ -70,14 +70,14 @@ from tf_agents.trajectories import time_step as ts
 
 tf.compat.v1.enable_v2_behavior()
 
-from grasp_Env_RelAction_reward5 import GraspEnv
+from grasp_Env_RelAction_reward11 import GraspEnv
 
 
 if __name__ == '__main__':
 
     rospy.init_node('Reload_Reinforcement_Learning_Agent', anonymous=True)
 
-    step_length = 5
+    step_length = 6
     
     environment = GraspEnv([120, 160], "inference", step_length)
 
@@ -108,7 +108,7 @@ if __name__ == '__main__':
     # # ---bad 
     # policy_dir = os.path.join(file_path + "/trained-model" + "/DQN/DQN_220505_1144_dqn_service2_reward5_steplength5_onlynormaldepth/Model/DQN_policy_37.0_1.9077859")
     # # ---great !
-    policy_dir = os.path.join(file_path + "/trained-model" + "/C51/C51_220505_1145_c51_service2_reward5_steplength5_onlynormaldepth/Model/C51_policy_143.0_4.103627")
+    # policy_dir = os.path.join(file_path + "/trained-model" + "/C51/C51_220505_1145_c51_service2_reward5_steplength5_onlynormaldepth/Model/C51_policy_143.0_4.103627")
 
     # reward 6
     # # ---bad
@@ -124,7 +124,17 @@ if __name__ == '__main__':
     # reward 8
     # policy_dir = os.path.join(file_path + "/trained-model" + "/C51/C51_220506_1603_c51_service2_reward8_steplength5_input2ch/Model/C51_policy_188.0_2.8839202")
 
+    # 20200509
 
+    # policy_dir = os.path.join(file_path + "/trained-model" + "/C51/C51_220508_0800_service2_reward10_steplength5_success_rate_yaction/Model/C51_policy_315.0_avg_return_4.683626_success_rate_0.76")
+
+    # policy_dir = os.path.join(file_path + "/trained-model" + "/C51/C51_220508_0759_service2_reward9_steplength5_success_rate_xyaction/Model/C51_policy_158.0_avg_return_3.5609744_success_rate_0.72")
+
+    # 20200511
+    # ---good
+    # policy_dir = os.path.join(file_path + "/trained-model" + "/C51/C51_220510_1150_service2_reward11_pointLikelihood_right_finger_-0.173648_no_pointLikelihood_grab_cloud/Model/C51_policy_483.0_avg_return_3.21092_success_rate_0.94")
+    
+   
     saved_policy = tf.saved_model.load(policy_dir)
 
 
