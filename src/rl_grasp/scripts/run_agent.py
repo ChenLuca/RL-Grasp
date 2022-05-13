@@ -70,14 +70,14 @@ from tf_agents.trajectories import time_step as ts
 
 tf.compat.v1.enable_v2_behavior()
 
-from grasp_Env_RelAction_reward11 import GraspEnv
+from grasp_Env_RelAction_reward12 import GraspEnv
 
 
 if __name__ == '__main__':
 
     rospy.init_node('Reload_Reinforcement_Learning_Agent', anonymous=True)
 
-    step_length = 6
+    step_length = 4
     
     environment = GraspEnv([120, 160], "inference", step_length)
 
@@ -134,7 +134,12 @@ if __name__ == '__main__':
     # ---good
     # policy_dir = os.path.join(file_path + "/trained-model" + "/C51/C51_220510_1150_service2_reward11_pointLikelihood_right_finger_-0.173648_no_pointLikelihood_grab_cloud/Model/C51_policy_483.0_avg_return_3.21092_success_rate_0.94")
     
-   
+    # 20200513
+    # ---good
+    policy_dir = os.path.join(file_path + "/trained-model" + "/C51/C51_220512_1750_service4_reward12_steplength4_100objects/Model/C51_policy_210.0_avg_return_3.6619248_success_rate_0.98")
+
+    # policy_dir = os.path.join(file_path + "/trained-model" + "/C51/C51_220512_1750_service4_reward12_steplength4_100objects/Model/C51_policy_226.0_avg_return_4.210852_success_rate_0.98")
+
     saved_policy = tf.saved_model.load(policy_dir)
 
 

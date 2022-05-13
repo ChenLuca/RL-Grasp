@@ -9,6 +9,8 @@ sudo docker run -it --gpus all --shm-size=8192m -P -v /home/luca-home/code/RL_Gr
 # At ur5 computer
 sudo docker run -it --gpus all --shm-size=8192m -P -v /home/ur5/code/RL_Grasp/:/home/code/RL_Grasp/:rw -v /home/ur5/datasets/:/home/datasets:rw rl_training:v1
 
+sudo docker run -it --gpus all --shm-size=8192m --network=host -v /home/ur5/code/RL_Grasp/:/home/code/RL_Grasp/:rw -v /home/ur5/datasets/:/home/datasets:rw rl_training:v1
+
 # At server
 sudo docker run -it --gpus all --shm-size=8192m -P -v /home/iclab/RenJie/code/RL_Grasp/:/home/code/RL_Grasp/:rw -v /home/iclab/datasets/:/home/datasets:rw rl_training:v1
 

@@ -379,6 +379,7 @@ bool do_PointcloudProcess()
       *Alignment_Cloud =  *Top_Filter_Cloud;
       
       do_remove_outerpoint(Alignment_Cloud, Alignment_Cloud);
+      
       pcl::toROSMsg(*Alignment_Cloud, Alignment_Cloud_msg);
       Alignment_Cloud_msg.header.frame_id = "top_rgb_camera_link";
       pubAlignment_Cloud.publish(Alignment_Cloud_msg);
