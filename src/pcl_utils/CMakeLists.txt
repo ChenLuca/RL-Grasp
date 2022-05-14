@@ -249,6 +249,10 @@ add_executable(pcl_service_4 src/pcl_service_4.cpp)
 target_link_libraries(pcl_service_4 ${catkin_LIBRARIES} ${OpenCV_LIBS})
 add_dependencies(pcl_service_4 ${catkin_EXPORTED_TARGETS})
 
+add_executable(pcl_service_5 src/pcl_service_5.cpp)
+target_link_libraries(pcl_service_5 ${catkin_LIBRARIES} ${OpenCV_LIBS})
+add_dependencies(pcl_service_5 ${catkin_EXPORTED_TARGETS})
+
 add_executable(cloud_alignment src/cloud_alignment.cpp)
 target_link_libraries(cloud_alignment ${catkin_LIBRARIES} ${OpenCV_LIBS})
 add_dependencies(cloud_alignment ${catkin_EXPORTED_TARGETS})
