@@ -1187,14 +1187,14 @@ bool do_setPointCloud(pcl_utils::setPointCloud::Request &req, pcl_utils::setPoin
 {
   cout<<"Set Input PointCloud"<<endl;
   
-  pcl::copyPointCloud(*filter_cloud, *alignment_cloud);
-  Set_Input_PointCloud = true;
+  // pcl::copyPointCloud(*filter_cloud, *alignment_cloud);
+  // Set_Input_PointCloud = true;
 
-  pcl::toROSMsg(*alignment_cloud, now_cloud_output);
-  now_cloud_output.header.frame_id = "top_rgb_camera_link";
-  pubNowCloud.publish(now_cloud_output);
+  // pcl::toROSMsg(*alignment_cloud, now_cloud_output);
+  // now_cloud_output.header.frame_id = "top_rgb_camera_link";
+  // pubNowCloud.publish(now_cloud_output);
 
-  res.back = 0;
+  // res.back = 0;
   return true;
 }
 
@@ -1996,12 +1996,11 @@ int main (int argc, char** argv)
   // Create ROS Service for taking picture
   ros::ServiceServer saveImage_service = nh.advertiseService("/snapshot", do_SavePointCloud);
 
-  ros::ServiceServer set_input_PointCloud_service = nh.advertiseService("/set_pointcloud", do_setPointCloud);
+  // ros::ServiceServer set_input_PointCloud_service = nh.advertiseService("/set_pointcloud", do_setPointCloud);
 
   // ros::ServiceServer load_input_PointCloud_service = nh.advertiseService("/load_pointcloud", do_loadPointCloud);
 
   ros::ServiceServer load_input_PointCloud_service = nh.advertiseService("/load_pointcloud", do_loadPointCloud_with_sample);
-
 
   ros::ServiceServer set_z_passthrough_service = nh.advertiseService("/set_z_passthrough", do_setZPassthrough);
 

@@ -70,7 +70,7 @@ from tf_agents.trajectories import time_step as ts
 
 tf.compat.v1.enable_v2_behavior()
 
-from grasp_Env_RelAction_reward12 import GraspEnv
+from grasp_Env_RelAction_reward13 import GraspEnv
 
 
 if __name__ == '__main__':
@@ -124,22 +124,27 @@ if __name__ == '__main__':
     # reward 8
     # policy_dir = os.path.join(file_path + "/trained-model" + "/C51/C51_220506_1603_c51_service2_reward8_steplength5_input2ch/Model/C51_policy_188.0_2.8839202")
 
-    # 20200509
+    # 20220509
 
     # policy_dir = os.path.join(file_path + "/trained-model" + "/C51/C51_220508_0800_service2_reward10_steplength5_success_rate_yaction/Model/C51_policy_315.0_avg_return_4.683626_success_rate_0.76")
 
     # policy_dir = os.path.join(file_path + "/trained-model" + "/C51/C51_220508_0759_service2_reward9_steplength5_success_rate_xyaction/Model/C51_policy_158.0_avg_return_3.5609744_success_rate_0.72")
 
-    # 20200511
+    # 20220511
     # ---good
     # policy_dir = os.path.join(file_path + "/trained-model" + "/C51/C51_220510_1150_service2_reward11_pointLikelihood_right_finger_-0.173648_no_pointLikelihood_grab_cloud/Model/C51_policy_483.0_avg_return_3.21092_success_rate_0.94")
     
-    # 20200513
+    # 20220513
     # ---good
     policy_dir = os.path.join(file_path + "/trained-model" + "/C51/C51_220512_1750_service4_reward12_steplength4_100objects/Model/C51_policy_210.0_avg_return_3.6619248_success_rate_0.98")
 
     # policy_dir = os.path.join(file_path + "/trained-model" + "/C51/C51_220512_1750_service4_reward12_steplength4_100objects/Model/C51_policy_226.0_avg_return_4.210852_success_rate_0.98")
 
+    # 20220515
+    # policy_dir = os.path.join(file_path + "/trained-model" + "/C51/C51_220514_1454_service4_reward13_steplength4_100objects/Model/C51_policy_493.0_avg_return_5.590956_success_rate_0.91")
+
+    
+    
     saved_policy = tf.saved_model.load(policy_dir)
 
 
@@ -147,11 +152,20 @@ if __name__ == '__main__':
         time_step = tf_env.reset()
         total_reward = 0
         time1 = time.time()
-        for i in range(step_length):
-            action_step = saved_policy.action(time_step)
-            time_step = tf_env.step(action_step.action)
-            total_reward += time_step.reward.numpy()
-            print("time_step reward: ", time_step.reward.numpy())
+        counter = 0
+        while total_reward <= 0:
+            for i in range(step_length):
+                action_step = saved_policy.action(time_step)
+                time_step = tf_env.step(action_step.action)
+                total_reward += time_step.reward.numpy()
+                if time_step.is_last():
+                    break
+                print("time_step reward: ", time_step.reward.numpy())
+            counter += 1
+            if counter > 3:
+                break
+            
+
         print("total_reward: ", total_reward)
         print("rl_grasp run time ", time.time() - time1)
         return total_reward

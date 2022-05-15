@@ -31,6 +31,7 @@
 #include <pcl/filters/radius_outlier_removal.h>
 #include <pcl/filters/conditional_removal.h>
 #include <pcl/filters/statistical_outlier_removal.h>
+#include "pcl_utils/setPointCloud.h"
 
 using namespace std;
 
@@ -324,7 +325,7 @@ do_ICP(pointcloud::Ptr &target,
   return transformation_matrix;
 }
 
-bool do_PointcloudProcess()
+bool do_PointcloudProcess(pcl_utils::setPointCloud::Request &req, pcl_utils::setPointCloud::Response &res)
 {
   Alignment_Cloud->clear();
 
@@ -352,8 +353,8 @@ bool do_PointcloudProcess()
   cout << "Top_Filter_Cloud->size() " << Top_Filter_Cloud->size() << endl;
 
   // if((Master_Filter_Cloud->size()!= 0) && (Top_Filter_Cloud->size()!= 0))
+  
   if( (Top_Filter_Cloud->size()!= 0))
-
   {
 
       cout << "[cloud alignment] begin" << endl;
@@ -395,7 +396,6 @@ bool do_PointcloudProcess()
       // cout << "Done ICP..." << endl;
       
       cout << "[cloud alignment] end" << endl;
-
   }
 }
 
@@ -415,6 +415,9 @@ int main (int argc, char** argv)
 
   ros::Subscriber Top_PointCloud = nh.subscribe<sensor_msgs::PointCloud2> ("/top/points2", 1, do_Callback_PointCloud_Top);
 
+  ros::ServiceServer set_input_PointCloud_service = nh.advertiseService("/set_pointcloud", do_PointcloudProcess);
+
+
 
   // Create ROS pointcloud publisher for the point cloud of Alignment_Cloud
   pubAlignment_Cloud = nh.advertise<sensor_msgs::PointCloud2> ("/Alignment_Cloud", 30);
@@ -422,12 +425,14 @@ int main (int argc, char** argv)
   ros::Rate loop_rate(100);
 
 
-  while(ros::ok())
-  {
-    do_PointcloudProcess();
-    ros::spinOnce();
-    loop_rate.sleep();
-  }
+  // while(ros::ok())
+  // {
+  //   do_PointcloudProcess();
+  //   ros::spinOnce();
+  //   loop_rate.sleep();
+  // }
+
+  ros::spin();
   
   return 0;
 }

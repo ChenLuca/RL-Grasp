@@ -156,6 +156,9 @@ class GraspEnv(py_environment.PyEnvironment):
         self.approach_stddev = 0
         self.normal_mean = 0
         self.normal_stddev = 0
+        self.NormalDepthNonZeroList = []
+        self.NormalDepthNonZeroListMaxLength = 1000
+        self.NormalDepthNonZeroListAvg = 1100
 
         self.Maxprincipal_curvatures_gaussian = 0.0001
         self.MaxNormalDepthNonZero = 3000
@@ -311,6 +314,14 @@ class GraspEnv(py_environment.PyEnvironment):
         # print("reset!")
         return ts.restart(self._state)
 
+    def _list_average(self, list):
+        return sum(list) / len(list)
+
+    def _list_fifo(self, list, list_max_size, input):
+        if len(list) >= list_max_size:
+            list.pop(0)
+        list.append(input)
+
     def _check_positive(self, action):
         if action > 0:
             return 1
@@ -410,6 +421,11 @@ class GraspEnv(py_environment.PyEnvironment):
             self.Maxapproach_stddev = self.approach_stddev
 
         self._reward =  (self.pointLikelihood_right_finger) - 1.0*(self.NormalDepthNonZero/self.MaxNormalDepthNonZero) - 0.1*(self._step_counter)
+        
+        # self._list_fifo(self.NormalDepthNonZeroList, self.NormalDepthNonZeroListMaxLength, self.NormalDepthNonZero)
+        # self.NormalDepthNonZeroListAvg = self._list_average(self.NormalDepthNonZeroList)
+
+        # print("self.NormalDepthNonZero:{}, self.NormalDepthNonZeroListAvg:{} ".format(self.NormalDepthNonZero, self.NormalDepthNonZeroListAvg))
 
         # self._reward =  - 1.0*(self.NormalDepthNonZero/self.MaxNormalDepthNonZero) \
         #                 + (self.pointLikelihood_right_finger) \
@@ -459,19 +475,33 @@ class GraspEnv(py_environment.PyEnvironment):
         #     self._step_counter = 0
         #     # print("out of angle!")
         #     return ts.termination(self._state, -30)
+        
+        if self.NormalDepthNonZero <= self.NormalDepthNonZeroListAvg:
+            self._reward = self._reward + 0.5
+        
+        if (self.pointLikelihood_right_finger >= -0.173648):
+            
+            ts_return = ts.termination(self._state, self._reward)
 
-        if self.pointLikelihood_right_finger >= -0.173648:
+            if (self.NormalDepthNonZero <= self.NormalDepthNonZeroListAvg):
+                self._reward = self._reward + 10
+
+                ts_return = ts.termination(self._state, self._reward + 10.0)
+            else:
+                ts_return =  ts.termination(self._state, self._reward + 5.0)
+                self._reward = self._reward + 5
+
             self._episode_ended = True
             self._is_success = 1
             self._step_counter = 0
-            return ts.termination(self._state, self._reward + 5.0)
+            return ts_return
 
-        if self.action_stop:
-            self.action_stop = False
-            self._episode_ended = True
-            self._step_counter = 0
-            print("action stop!")
-            return ts.termination(self._state, 0.0)
+        # if self.action_stop:
+        #     self.action_stop = False
+        #     self._episode_ended = True
+        #     self._step_counter = 0
+        #     print("action stop!")
+        #     return ts.termination(self._state, 0.0)
 
         if self.phase == "training":
             if self._step_counter > self._step_lengh:
