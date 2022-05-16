@@ -77,7 +77,7 @@ if __name__ == '__main__':
 
     rospy.init_node('Reload_Reinforcement_Learning_Agent', anonymous=True)
 
-    step_length = 4
+    step_length = 10
     
     environment = GraspEnv([120, 160], "inference", step_length)
 
@@ -143,7 +143,10 @@ if __name__ == '__main__':
     # 20220515
     # policy_dir = os.path.join(file_path + "/trained-model" + "/C51/C51_220514_1454_service4_reward13_steplength4_100objects/Model/C51_policy_493.0_avg_return_5.590956_success_rate_0.91")
 
-    
+    # 20220516
+    # ---good
+    # policy_dir = os.path.join(file_path + "/trained-model" + "/C51/C51_220515_1506_service4_reward12_steplength10_100objects/Model/C51_policy_230.0_avg_return_4.3904934_success_rate_1.0")
+
     
     saved_policy = tf.saved_model.load(policy_dir)
 
@@ -163,6 +166,7 @@ if __name__ == '__main__':
                 print("time_step reward: ", time_step.reward.numpy())
             counter += 1
             if counter > 3:
+                # time_step = tf_env.reset()
                 break
             
 

@@ -1,5 +1,5 @@
 <launch>
-	<node name="pcl_service" pkg="pcl_utils" type="pcl_service_5" />
+	<node name="pcl_service" pkg="pcl_utils" type="pcl_service_5"/>
 	<node name="cloud_alignment" pkg="pcl_utils" type="cloud_alignment" />
 	<node name="RL_Grasping" pkg="rl_grasp" type="run_agent.py" output="screen" />
 </launch>

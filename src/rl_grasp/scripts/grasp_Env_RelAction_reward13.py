@@ -158,7 +158,7 @@ class GraspEnv(py_environment.PyEnvironment):
         self.normal_stddev = 0
         self.NormalDepthNonZeroList = []
         self.NormalDepthNonZeroListMaxLength = 1000
-        self.NormalDepthNonZeroListAvg = 1100
+        self.NormalDepthNonZeroListAvg = 1500
 
         self.Maxprincipal_curvatures_gaussian = 0.0001
         self.MaxNormalDepthNonZero = 3000
@@ -470,11 +470,11 @@ class GraspEnv(py_environment.PyEnvironment):
         #     print("finger crash!")
         #     return ts.termination(self._state, -30)
 
-        # if (abs(self.rotate_x) > (math.pi*60)/180) or (abs(self.rotate_y) > (math.pi*60)/180):
-        #     self._episode_ended = True
-        #     self._step_counter = 0
-        #     # print("out of angle!")
-        #     return ts.termination(self._state, -30)
+        if (abs(self.rotate_x) > (math.pi*60)/180) or (abs(self.rotate_y) > (math.pi*60)/180):
+            self._episode_ended = True
+            self._step_counter = 0
+            # print("out of angle!")
+            return ts.termination(self._state, -30)
         
         if self.NormalDepthNonZero <= self.NormalDepthNonZeroListAvg:
             self._reward = self._reward + 0.5
@@ -487,14 +487,15 @@ class GraspEnv(py_environment.PyEnvironment):
                 self._reward = self._reward + 10
 
                 ts_return = ts.termination(self._state, self._reward + 10.0)
+                self._episode_ended = True
+                self._is_success = 1
+                self._step_counter = 0
+                return ts_return
+
             else:
-                ts_return =  ts.termination(self._state, self._reward + 5.0)
+                # ts_return =  ts.termination(self._state, self._reward + 5.0)
                 self._reward = self._reward + 5
 
-            self._episode_ended = True
-            self._is_success = 1
-            self._step_counter = 0
-            return ts_return
 
         # if self.action_stop:
         #     self.action_stop = False
