@@ -77,6 +77,7 @@ add_service_files(
   setZPassthrough.srv
   get_RL_Env.srv
   sample_q_image.srv
+  setDLGraspPoint.srv
 )
 
 ## Generate actions in the 'action' folder
@@ -252,6 +253,10 @@ add_dependencies(pcl_service_4 ${catkin_EXPORTED_TARGETS})
 add_executable(pcl_service_5 src/pcl_service_5.cpp)
 target_link_libraries(pcl_service_5 ${catkin_LIBRARIES} ${OpenCV_LIBS})
 add_dependencies(pcl_service_5 ${catkin_EXPORTED_TARGETS})
+
+add_executable(pcl_service_5_run_agent src/pcl_service_5_run_agent.cpp)
+target_link_libraries(pcl_service_5_run_agent ${catkin_LIBRARIES} ${OpenCV_LIBS})
+add_dependencies(pcl_service_5_run_agent ${catkin_EXPORTED_TARGETS})
 
 add_executable(cloud_alignment src/cloud_alignment.cpp)
 target_link_libraries(cloud_alignment ${catkin_LIBRARIES} ${OpenCV_LIBS})

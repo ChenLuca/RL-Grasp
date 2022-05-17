@@ -184,6 +184,10 @@ bool Set_Input_PointCloud = false;
 //Snapshot service
 int take_picture_counter = 0;
 
+float final_dl_grasp_x = 0;
+float final_dl_grasp_y = 0;
+float final_dl_grasp_angle = 0;
+
 //Project image size, maybe too large or small
 int Mapping_width = 640, Mapping_high = 480;
 cv::Mat Mapping_RGB_Image(Mapping_high, Mapping_width, CV_8UC3, cv::Scalar(0, 0, 0));
@@ -1149,6 +1153,9 @@ string SaveImage_Counter_Wrapper(int num, int object_number)
 bool do_SetDLGraspPoint(pcl_utils::setDLGraspPoint::Request &req, pcl_utils::setDLGraspPoint::Response &res)
 {
   cout << "do_SetDLGraspPoint" <<endl; 
+  final_dl_grasp_x = dl_grasp_input.x;
+  final_dl_grasp_y = dl_grasp_input.y;
+  final_dl_grasp_angle = dl_grasp_input.angle;
   return true;
 }
 
@@ -1363,13 +1370,16 @@ pcl_utils::RL_Env_msg do_PointcloudProcess()
   if(alignment_cloud->size()!=0)
   {
     //=== Get grab pointclout & count it's number === [begin]
-    float grasp_angle = dl_grasp_input.angle;
+    float grasp_angle = final_dl_grasp_angle;
     grasp_angle = 0;
 
     cv::Point2f dl_grasp_predict;
 
-    dl_grasp_predict.x = dl_grasp_input.x;
-    dl_grasp_predict.y = dl_grasp_input.y;
+    // dl_grasp_predict.x = dl_grasp_input.x;
+    // dl_grasp_predict.y = dl_grasp_input.y;
+
+    dl_grasp_predict.x = final_dl_grasp_x;
+    dl_grasp_predict.y = final_dl_grasp_y;
 
     oan_vector plane_coefficients_vector;
 
