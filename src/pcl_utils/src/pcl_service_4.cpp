@@ -1507,7 +1507,9 @@ pcl_utils::RL_Env_msg do_PointcloudProcess()
         // std::cout << "gaussian_curvature " << gaussian_curvature << endl;
 
         RL_Env.principal_curvatures_gaussian_msg = gaussian_curvature;
-        
+        RL_Env.normal_x = object_normal_grab.normal_x;
+        RL_Env.normal_y = object_normal_grab.normal_y;
+        RL_Env.normal_z = object_normal_grab.normal_z;
 
         // // Display and retrieve the shape context descriptor vector for the 0th point.
         // pcl::PrincipalCurvatures descriptor = principal_curvatures->points[0];
@@ -1653,6 +1655,7 @@ pcl_utils::RL_Env_msg do_PointcloudProcess()
         // std::cout << "right_avg_curvature " << right_avg_curvature << endl;
         // std::cout << "right_gaussian_curvature " << right_gaussian_curvature << endl;
         // std::cout << "===================================" << endl;
+
 
       }
 

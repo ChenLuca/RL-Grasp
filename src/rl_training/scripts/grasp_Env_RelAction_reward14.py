@@ -107,15 +107,15 @@ class GraspEnv(py_environment.PyEnvironment):
     def __init__(self, input_image_size, phase, step_lengtn):
         
         # must be odd number
-        self.num_actions = 9
+        self.num_actions = 81
 
         self.input_image_size = input_image_size
 
-        self.input_channel = 1
+        self.input_channel = 2
 
         self._step_lengh = step_lengtn
         
-        print("grasp_Env_RelAction_reward10")
+        print("grasp_Env_RelAction_reward12")
 
         print("self._step_lengh: ", self._step_lengh)
 
@@ -123,9 +123,15 @@ class GraspEnv(py_environment.PyEnvironment):
 
         self._action_spec = array_spec.BoundedArraySpec(shape=(), dtype=np.int32, minimum=0, maximum=(self.num_actions - 1), name="action")
 
-        self._observation_spec = {"depth_grab" : array_spec.BoundedArraySpec((self.input_image_size[0], self.input_image_size[1], self.input_channel), dtype = np.float32, minimum=0, maximum=255)}
+        self._observation_spec = {"depth_grab" : array_spec.BoundedArraySpec((self.input_image_size[0], self.input_image_size[1], self.input_channel), dtype = np.float32, minimum=0, maximum=255),
+                                  "previous_action" : array_spec.BoundedArraySpec((), dtype = np.int32, minimum=0, maximum=(self.num_actions-1)),
+                                  "normal_vector" : array_spec.ArraySpec((3,), dtype = np.float32)
+                                  }
 
-        self._state = {"depth_grab" : np.zeros((self.input_image_size[0], self.input_image_size[1], self.input_channel), np.float32)}
+        self._state = {"depth_grab" : np.zeros((self.input_image_size[0], self.input_image_size[1], self.input_channel), np.float32),
+                       "previous_action" : np.int32,
+                       "normal_vector": np.array([0, 0, 0], dtype=np.float32)
+                       }
         
         self.grab_normal_depth_image = np.zeros((0,0,1), np.float32)
         self.grab_approach_depth_image = np.zeros((0,0,1), np.float32)
@@ -138,6 +144,8 @@ class GraspEnv(py_environment.PyEnvironment):
         self._reward = 0 
         self._step_counter = 0
         self._is_success = 0
+
+        self._previos_action = np.int32(math.floor(self.num_actions/2))
 
         self._number_of_grab_pointClouds = 0
         self._number_of_finger_grab_pointClouds = 0
@@ -152,6 +160,12 @@ class GraspEnv(py_environment.PyEnvironment):
         self.approach_stddev = 0
         self.normal_mean = 0
         self.normal_stddev = 0
+        self.NormalDepthNonZeroList = []
+        self.NormalDepthNonZeroListMaxLength = 10000
+        self.NormalDepthNonZeroListAvg = 0
+        self.normal_x = 0
+        self.normal_y = 0
+        self.normal_z = 0
 
         self.Maxprincipal_curvatures_gaussian = 0.0001
         self.MaxNormalDepthNonZero = 3000
@@ -203,6 +217,10 @@ class GraspEnv(py_environment.PyEnvironment):
             self.approach_stddev = res.state.approach_stddev
             self.normal_mean = res.state.normal_mean
             self.normal_stddev = res.state.normal_stddev
+            self.normal_x = res.state.normal_x
+            self.normal_y = res.state.normal_y
+            self.normal_z = res.state.normal_z
+
 
             if math.isnan(res.state.principal_curvatures_gaussian_msg):
                 self.principal_curvatures_gaussian = 0
@@ -303,9 +321,17 @@ class GraspEnv(py_environment.PyEnvironment):
         self.pub_AngleAxisRotation.publish(rotation)
 
         # time.sleep(0.025)
-        self._update_ROS_data()
+        self._update_ROS_data(np.int32(math.floor(self.num_actions/2)))
         # print("reset!")
         return ts.restart(self._state)
+
+    def _list_average(self, list):
+        return sum(list) / len(list)
+
+    def _list_fifo(self, list, list_max_size, input):
+        if len(list) >= list_max_size:
+            list.pop(0)
+        list.append(input)
 
     def _check_positive(self, action):
         if action > 0:
@@ -318,10 +344,10 @@ class GraspEnv(py_environment.PyEnvironment):
     def _set_action_degree(self, action):
 
         # 3 degree
-        rotation_angle_3 = (math.pi*3)/180
+        rotation_angle_1 = (math.pi*1)/180
 
         # 7  degree
-        rotation_angle_7 = (math.pi*7)/180 
+        rotation_angle_5 = (math.pi*5)/180 
 
         # 15 degree
         rotation_angle_15 = (math.pi*15)/180 
@@ -334,9 +360,9 @@ class GraspEnv(py_environment.PyEnvironment):
         elif abs(action) == 3:
             return self._check_positive(action) * rotation_angle_15
         elif abs(action) == 2:
-            return self._check_positive(action) * rotation_angle_7
+            return self._check_positive(action) * rotation_angle_5
         elif abs(action) == 1:
-            return self._check_positive(action) * rotation_angle_3
+            return self._check_positive(action) * rotation_angle_1
         else:
             return 0
 
@@ -356,9 +382,13 @@ class GraspEnv(py_environment.PyEnvironment):
         rotation.x = 0
         rotation.y = 0
         rotation.z = 0
+
+        rotation_angle_x, rotation_angle_y = self._set_action(self.num_actions, action_value)
+
+        # rotation_angle_y = action_value -2
+        # rotation_angle_x = action_value -2
         
-        rotation_angle_y = self._set_action_degree((action_value - 4))
-        
+        self.rotate_x = self.rotate_x + rotation_angle_x 
         self.rotate_y = self.rotate_y + rotation_angle_y 
 
         rotation.x = self.rotate_x
@@ -369,14 +399,19 @@ class GraspEnv(py_environment.PyEnvironment):
         # print("action_value ", action_value)
         # print("self.rotate_x: {}, self.rotate_y: {}".format(self.rotate_x/math.pi*180.0, self.rotate_y/math.pi*180.0))
 
-    def _update_ROS_data(self):
+    def _update_ROS_data(self, action):
 
         # start_time = time.time()
         self.get_RL_Env_data(1)
         # print("--- %s seconds ---" % (time.time() - start_time))
         # self._state["depth_grab"] = np.concatenate((self.grab_normal_depth_image, self.grab_approach_depth_image, self.grab_open_depth_image), axis=-1)
-        # self._state["depth_grab"] = np.concatenate((self.grab_normal_depth_image, self.grab_approach_depth_image), axis=-1)
-        self._state["depth_grab"] = self.grab_normal_depth_image
+        self._state["depth_grab"] = np.concatenate((self.grab_normal_depth_image, self.grab_approach_depth_image), axis=-1)
+        self._state["previous_action"] = action
+        self._state["normal_vector"][0] = self.normal_x
+        self._state["normal_vector"][1] = self.normal_y
+        self._state["normal_vector"][2] = self.normal_z
+
+        # self._state["depth_grab"] = self.grab_normal_depth_image
 
         self._update_reward()
 
@@ -399,7 +434,12 @@ class GraspEnv(py_environment.PyEnvironment):
         if self.approach_stddev > self.Maxapproach_stddev:
             self.Maxapproach_stddev = self.approach_stddev
 
-        self._reward =  (self.pointLikelihood_right_finger) + self.pointLikelihood_grab_cloud - 0.1*(self._step_counter)
+        self._reward =  (self.pointLikelihood_right_finger) - 1.0*(self.NormalDepthNonZero/self.MaxNormalDepthNonZero) - 0.1*(self._step_counter)
+        
+        self._list_fifo(self.NormalDepthNonZeroList, self.NormalDepthNonZeroListMaxLength, self.NormalDepthNonZero)
+        self.NormalDepthNonZeroListAvg = self._list_average(self.NormalDepthNonZeroList)
+
+        print("self.NormalDepthNonZero:{}, self.NormalDepthNonZeroListAvg:{} ".format(self.NormalDepthNonZero, self.NormalDepthNonZeroListAvg))
 
         # self._reward =  - 1.0*(self.NormalDepthNonZero/self.MaxNormalDepthNonZero) \
         #                 + (self.pointLikelihood_right_finger) \
@@ -411,6 +451,7 @@ class GraspEnv(py_environment.PyEnvironment):
         #                 + (self.principal_curvatures_gaussian) 
         #                 + 1.0*(self._number_of_grab_pointClouds/self.Max_number_of_grab_pointClouds) 
         #                 + 1.0*(self.OpenDepthNonZero/self.MaxOpenDepthNonZero) 
+        #                 + self.pointLikelihood_grab_cloud 
 
     def is_success(self):
         return self._is_success
@@ -430,27 +471,39 @@ class GraspEnv(py_environment.PyEnvironment):
 
         # time.sleep(0.025)
 
-        self._update_ROS_data()
+        self._update_ROS_data(self._previos_action)
+
+        self._previos_action = action
+
         # self._update_reward()
         self._step_counter = self._step_counter +1
 
-        if self._number_of_finger_grab_pointClouds > 0:
-            self._episode_ended = True
-            self._step_counter = 0
-            # print("finger crash!")
-            return ts.termination(self._state, -30)
+        # if self._number_of_finger_grab_pointClouds > 0:
+        #     self._episode_ended = True
+        #     self._step_counter = 0
+        #     print("finger crash!")
+        #     return ts.termination(self._state, -30)
 
         if (abs(self.rotate_x) > (math.pi*60)/180) or (abs(self.rotate_y) > (math.pi*60)/180):
             self._episode_ended = True
             self._step_counter = 0
             # print("out of angle!")
             return ts.termination(self._state, -30)
+        
+        if self.NormalDepthNonZero <= self.NormalDepthNonZeroListAvg:
+            self._reward = self._reward + 0.5
+        
+        if (self.pointLikelihood_right_finger >= -0.173648):
+            
+            ts_return = ts.transition(self._state, self._reward + 1, discount=1.0)
 
-        if self.pointLikelihood_right_finger > -0.1:
-            self._episode_ended = True
-            self._is_success = 1
-            self._step_counter = 0
-            return ts.termination(self._state, self._reward + 5)
+            if (self.NormalDepthNonZero <= self.NormalDepthNonZeroListAvg):
+                self._episode_ended = True
+                self._is_success = 1
+                self._step_counter = 0
+                ts_return = ts.termination(self._state, self._reward + 5.0)
+
+            return ts_return
 
         if self.action_stop:
             self.action_stop = False

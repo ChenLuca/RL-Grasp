@@ -13,4 +13,6 @@ float64 approach_mean
 float64 approach_stddev
 float64 normal_mean
 float64 normal_stddev
-
+float64 normal_x
+float64 normal_y
+float64 normal_z
