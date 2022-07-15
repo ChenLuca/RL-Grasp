@@ -210,7 +210,7 @@ if __name__ == '__main__':
 
     description = rospy.get_param('description')
 
-    tb = tensorboardX.SummaryWriter(file_path + "/trained-model/C51/" + "C51_" + str(dt) + "_" + str(description) + "/")
+    tb = tensorboardX.SummaryWriter(file_path + "/trained-model/DQN/" + "DQN_" + str(dt) + "_" + str(description) + "/")
 
     _step_lengtn = 10
     
@@ -248,15 +248,20 @@ if __name__ == '__main__':
 
     preprocessing_combiner = tf.keras.layers.Concatenate(axis=-1)
 
-    categorical_q_net = categorical_q_network.CategoricalQNetwork(
+    my_q_network = tf_agents.networks.q_network.QNetwork(
                     tf_env.observation_spec(), 
-                    tf_env.action_spec(),
+                    tf_env.action_spec(), 
                     preprocessing_layers=preprocessing_layers,
                     preprocessing_combiner=preprocessing_combiner,
-                    num_atoms=num_atoms,
+                    conv_layer_params=None, 
                     fc_layer_params=(100, 50),
-                    activation_fn=tf.keras.activations.tanh,
-                    name='C51_QNetwork')
+                    dropout_layer_params=None, 
+                    activation_fn=tf.keras.activations.relu,
+                    kernel_initializer=None, 
+                    batch_squash=True, 
+                    dtype=tf.float32,
+                    name='QNetwork'
+                )
 
     learning_rate = 1e-4
     optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
@@ -271,21 +276,18 @@ if __name__ == '__main__':
         end_learning_rate=end_epsilon)
     n_TD_step_update = 1
 
-    agent = categorical_dqn_agent.CategoricalDqnAgent(
-        tf_env.time_step_spec(), 
+    agent = dqn_agent.DqnAgent(
+        tf_env.time_step_spec(),
         tf_env.action_spec(),
-        categorical_q_network=categorical_q_net,
-        optimizer=optimizer,
-        min_q_value=min_q_value,
-        max_q_value=max_q_value,
-        n_step_update=n_step_update,
+        n_step_update = n_TD_step_update,
+        q_network=my_q_network,
         epsilon_greedy=epsilon,
-        gamma=gamma,
+        optimizer=optimizer,
+        td_errors_loss_fn=common.element_wise_squared_loss,
         train_step_counter=global_step)
-
     agent.initialize()
 
-    print("categorical_q_net.summary(): ", categorical_q_net.summary())
+    print("categorical_q_net.summary(): ", my_q_network.summary())
 
     replay_buffer = tf_agents.replay_buffers.tf_uniform_replay_buffer.TFUniformReplayBuffer(data_spec=agent.collect_data_spec,
                                                                                             batch_size=tf_env.batch_size,
@@ -344,7 +346,7 @@ if __name__ == '__main__':
                 tb.add_scalar("/train/reward", avg_return, step)
                 tb.add_scalar("/train/success_rate", success_rate, step)
 
-                save_agent(file_path + "/trained-model/C51/" + "C51_" + str(dt) + "_" + str(description) + \
-                            "/Model/",'C51_policy_' + str(step/1000) + "_avg_return_" + str(avg_return) + "_success_rate_" + str(success_rate), agent.policy)
+                save_agent(file_path + "/trained-model/DQN/" + "DQN_" + str(dt) + "_" + str(description) + \
+                            "/Model/",'DQN_policy_' + str(step/1000) + "_avg_return_" + str(avg_return) + "_success_rate_" + str(success_rate), agent.policy)
 
 

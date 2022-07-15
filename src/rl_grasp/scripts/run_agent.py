@@ -70,7 +70,7 @@ from tf_agents.trajectories import time_step as ts
 
 tf.compat.v1.enable_v2_behavior()
 
-from grasp_Env_RelAction_reward13 import GraspEnv
+from grasp_Env_RelAction_reward10 import GraspEnv
 
 
 if __name__ == '__main__':
@@ -126,7 +126,7 @@ if __name__ == '__main__':
 
     # 20220509
 
-    # policy_dir = os.path.join(file_path + "/trained-model" + "/C51/C51_220508_0800_service2_reward10_steplength5_success_rate_yaction/Model/C51_policy_315.0_avg_return_4.683626_success_rate_0.76")
+    policy_dir = os.path.join(file_path + "/trained-model" + "/C51/C51_220508_0800_service2_reward10_steplength5_success_rate_yaction/Model/C51_policy_315.0_avg_return_4.683626_success_rate_0.76")
 
     # policy_dir = os.path.join(file_path + "/trained-model" + "/C51/C51_220508_0759_service2_reward9_steplength5_success_rate_xyaction/Model/C51_policy_158.0_avg_return_3.5609744_success_rate_0.72")
 
@@ -136,7 +136,7 @@ if __name__ == '__main__':
     
     # 20220513
     # ---good
-    policy_dir = os.path.join(file_path + "/trained-model" + "/C51/C51_220512_1750_service4_reward12_steplength4_100objects/Model/C51_policy_210.0_avg_return_3.6619248_success_rate_0.98")
+    # policy_dir = os.path.join(file_path + "/trained-model" + "/C51/C51_220512_1750_service4_reward12_steplength4_100objects/Model/C51_policy_210.0_avg_return_3.6619248_success_rate_0.98")
 
     # policy_dir = os.path.join(file_path + "/trained-model" + "/C51/C51_220512_1750_service4_reward12_steplength4_100objects/Model/C51_policy_226.0_avg_return_4.210852_success_rate_0.98")
 

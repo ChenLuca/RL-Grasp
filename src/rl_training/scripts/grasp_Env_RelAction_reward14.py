@@ -439,7 +439,7 @@ class GraspEnv(py_environment.PyEnvironment):
         self._list_fifo(self.NormalDepthNonZeroList, self.NormalDepthNonZeroListMaxLength, self.NormalDepthNonZero)
         self.NormalDepthNonZeroListAvg = self._list_average(self.NormalDepthNonZeroList)
 
-        print("self.NormalDepthNonZero:{}, self.NormalDepthNonZeroListAvg:{} ".format(self.NormalDepthNonZero, self.NormalDepthNonZeroListAvg))
+        # print("self.NormalDepthNonZero:{}, self.NormalDepthNonZeroListAvg:{} ".format(self.NormalDepthNonZero, self.NormalDepthNonZeroListAvg))
 
         # self._reward =  - 1.0*(self.NormalDepthNonZero/self.MaxNormalDepthNonZero) \
         #                 + (self.pointLikelihood_right_finger) \
@@ -487,7 +487,7 @@ class GraspEnv(py_environment.PyEnvironment):
         if (abs(self.rotate_x) > (math.pi*60)/180) or (abs(self.rotate_y) > (math.pi*60)/180):
             self._episode_ended = True
             self._step_counter = 0
-            # print("out of angle!")
+            print("out of angle!")
             return ts.termination(self._state, -30)
         
         if self.NormalDepthNonZero <= self.NormalDepthNonZeroListAvg:
@@ -495,15 +495,12 @@ class GraspEnv(py_environment.PyEnvironment):
         
         if (self.pointLikelihood_right_finger >= -0.173648):
             
-            ts_return = ts.transition(self._state, self._reward + 1, discount=1.0)
-
             if (self.NormalDepthNonZero <= self.NormalDepthNonZeroListAvg):
                 self._episode_ended = True
                 self._is_success = 1
                 self._step_counter = 0
-                ts_return = ts.termination(self._state, self._reward + 5.0)
 
-            return ts_return
+                return ts.termination(self._state, self._reward + 5.0)
 
         if self.action_stop:
             self.action_stop = False
@@ -516,7 +513,7 @@ class GraspEnv(py_environment.PyEnvironment):
             if self._step_counter > self._step_lengh:
                 self._episode_ended = True
                 self._step_counter = 0
-                # print("out of step!")
+                print("out of step!")
                 return ts.termination(self._state, self._reward)
 
             else:
