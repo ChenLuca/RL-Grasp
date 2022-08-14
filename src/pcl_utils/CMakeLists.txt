@@ -230,26 +230,6 @@ include_directories(
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 
-add_executable(pcl_service src/pcl_service.cpp)
-target_link_libraries(pcl_service ${catkin_LIBRARIES} ${OpenCV_LIBS})
-add_dependencies(pcl_service ${catkin_EXPORTED_TARGETS})
-
-add_executable(pcl_service_2 src/pcl_service_2.cpp)
-target_link_libraries(pcl_service_2 ${catkin_LIBRARIES} ${OpenCV_LIBS})
-add_dependencies(pcl_service_2 ${catkin_EXPORTED_TARGETS})
-
-add_executable(pcl_service_2_rl_testing src/pcl_service_2_rl_testing.cpp)
-target_link_libraries(pcl_service_2_rl_testing ${catkin_LIBRARIES} ${OpenCV_LIBS})
-add_dependencies(pcl_service_2_rl_testing ${catkin_EXPORTED_TARGETS})
-
-add_executable(pcl_service_3 src/pcl_service_3.cpp)
-target_link_libraries(pcl_service_3 ${catkin_LIBRARIES} ${OpenCV_LIBS})
-add_dependencies(pcl_service_3 ${catkin_EXPORTED_TARGETS})
-
-add_executable(pcl_service_4 src/pcl_service_4.cpp)
-target_link_libraries(pcl_service_4 ${catkin_LIBRARIES} ${OpenCV_LIBS})
-add_dependencies(pcl_service_4 ${catkin_EXPORTED_TARGETS})
-
 add_executable(pcl_service_5 src/pcl_service_5.cpp)
 target_link_libraries(pcl_service_5 ${catkin_LIBRARIES} ${OpenCV_LIBS})
 add_dependencies(pcl_service_5 ${catkin_EXPORTED_TARGETS})
